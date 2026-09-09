@@ -3,7 +3,7 @@
    del mismo dispositivo (BroadcastChannel + evento storage). Todos los datos son ILUSTRATIVOS. */
 (function () {
   'use strict';
-  const KEY = 'cc_demo_v6';
+  const KEY = 'cc_demo_v7';
   const SECRET = 'canta-corazon-demo-2026'; // solo demo: en producción la firma vive en el servidor
   const CANAL = 'cc-demo';
 
@@ -238,6 +238,7 @@
         db.pedidos.push({ id: uid('o'), suc: r.suc, mesaId: r.mesaId, reservaId: r.id, items, estado, origen: rnd() < 0.5 ? 'app' : 'mesero', meseroId: pick(meserosPor[r.suc]).id, hora: (21 + Math.floor(rnd() * 3)) + ':' + pad(Math.floor(rnd() * 60)), creado: Date.now() - Math.floor(rnd() * 3.6e6) });
       }
       db.pagos.push({ id: uid('pg'), suc: r.suc, fecha: H, hora: r.hora, clienteId: r.clienteId, reservaId: r.id, concepto: 'Anticipo mesa ' + db.mesas.find(m => m.id === r.mesaId).num, monto: r.anticipo, metodo: r.metodo, estado: r.metodo === 'efectivo' ? (rnd() < 0.7 ? 'confirmado' : 'pendiente_caja') : 'aprobado', propina: 0 });
+      if (rnd() < 0.6) db.pagos.push({ id: uid('pg'), suc: r.suc, fecha: H, hora: (22 + Math.floor(rnd() * 2)) + ':' + pad(Math.floor(rnd() * 60)), clienteId: r.clienteId, reservaId: r.id, concepto: 'Cuenta mesa ' + db.mesas.find(m => m.id === r.mesaId).num + ' (parcial)', monto: round(between(1500, 6000)), metodo: pick(['tarjeta', 'applepay']), estado: 'aprobado', propina: round(between(150, 700)) });
     });
     db.pagos.push({ id: uid('pg'), suc: 's1', fecha: H, hora: '12:41', clienteId: 'c1', reservaId: 'r_mar', concepto: 'Anticipo mesa 14 (grupo)', monto: 5000, metodo: 'applepay', estado: 'aprobado', propina: 0 });
     // canciones pedidas

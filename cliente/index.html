@@ -373,7 +373,7 @@
       <rect x="0" y="0" width="360" height="330" rx="14" fill="#F6EFE4"/>
       <rect x="90" y="6" width="180" height="28" rx="8" fill="#320707"/><text x="180" y="24" text-anchor="middle" font-size="11" font-weight="700" fill="#F6EFE4" font-family="Montserrat, sans-serif">${piso === 1 ? 'BARRA Y ESCENARIO' : 'BALCÓN · SALONES'}</text>
       ${piso === 1 ? '<rect x="120" y="96" width="120" height="50" rx="12" fill="#EFE3D6"/><text x="180" y="125" text-anchor="middle" font-size="10" fill="#A88C82" font-family="Montserrat, sans-serif">PISTA · CORO</text>' : ''}
-      <rect x="150" y="302" width="60" height="22" rx="6" fill="#EFE3D6"/><text x="180" y="317" text-anchor="middle" font-size="9" fill="#A88C82" font-family="Montserrat, sans-serif">ENTRADA</text>`;
+      <rect x="10" y="8" width="60" height="22" rx="6" fill="#EFE3D6"/><text x="40" y="23" text-anchor="middle" font-size="9" fill="#A88C82" font-family="Montserrat, sans-serif">ENTRADA</text>`;
     mesas.forEach(m => {
       const est = estadoMesa(m); const sel = m.id === selId;
       const fill = sel ? '#C25B32' : est === 'ocupada' ? '#320707' : est === 'apartada' ? '#F3C8B4' : '#FFFDF9';
