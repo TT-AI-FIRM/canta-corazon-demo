@@ -1,0 +1,19 @@
+/* Canta Corazón · Demo · identidad compartida */
+@font-face { font-family: "Montserrat"; src: url("fonts/Montserrat.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("fonts/Montserrat-Italic.ttf") format("truetype"); font-weight: 100 900; font-style: italic; font-display: swap; }
+@font-face { font-family: "Inter Tight"; src: url("fonts/InterTight.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+:root {
+  --paper: #F6EFE4; --white: #FFFDF9; --ink: #320707; --terra: #C25B32; --rust: #AF4030; --muted: #7A5A50; --dim: #A88C82; --line: #DBCFC5;
+  --salmon: #F3C8B4; --salmon2: #F3E4DC; --sage: #7E8B6C; --gold: #C99A2E; --aqua: #3FA8A6; --pink: #D0609F;
+  --ok: #2E9E6B; --warn: #D99A1E; --bad: #C8323A;
+  --dark: #130708; --dark2: #1C0D0F; --dark3: #241819; --darkline: #2E2022; --darktext: #F6EFE4; --darkmuted: #B69A92;
+  --qbar: #3FA8A6; --qcov: #7E8B6C; --qmesa: #C25B32; --qvip: #C99A2E; --qcli: #D0609F;
+  --font: "Montserrat", "Avenir Next", Helvetica, Arial, sans-serif; --num: "Inter Tight", "Montserrat", sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--font); font-size: 15px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.num { font-family: var(--num); font-variant-numeric: tabular-nums; }

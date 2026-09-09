@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F6EFE4">
+<title>Canta Corazón · Mi noche</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="../shared/img/apple-touch-icon.png">
+<link rel="icon" href="../shared/img/fav.svg">
+<link rel="stylesheet" href="../shared/brand.css">
+<style>
+  body { background: var(--paper); color: var(--ink); }
+  #app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; background: var(--paper); }
+  header.top { position: sticky; top: 0; z-index: 20; background: var(--paper); padding: calc(10px + env(safe-area-inset-top)) 16px 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+  header.top img { height: 14px; display: block; }
+  .chip { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--terra); border: 1px solid var(--line); background: var(--white); border-radius: 999px; padding: 5px 9px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--terra); color: var(--paper); font-weight: 800; font-size: 12px; display: grid; place-items: center; border: 0; }
+  main { flex: 1; padding: 14px 16px calc(84px + env(safe-area-inset-bottom)) 16px; }
+  nav.bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 20; background: var(--white); border-top: 1px solid var(--line); padding: 8px 6px calc(8px + env(safe-area-inset-bottom)) 6px; }
+  nav.bottom .inner { max-width: 480px; margin: 0 auto; display: flex; justify-content: space-around; }
+  nav.bottom button { background: none; border: 0; color: var(--dim); font-size: 9.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 8px; }
+  nav.bottom button svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  nav.bottom button.on { color: var(--terra); }
+  h1 { font-size: 24px; line-height: 1.12; font-weight: 800; letter-spacing: -.015em; margin: 6px 0 6px 0; }
+  h1 em { font-style: normal; color: var(--terra); }
+  h2 { font-size: 16px; font-weight: 800; margin: 18px 0 8px 0; letter-spacing: -.01em; }
+  .eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin: 4px 0 6px 0; }
+  .lead { color: var(--muted); font-size: 14px; margin: 0 0 12px 0; }
+  .card { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .card + .card { margin-top: 10px; }
+  .card.ink { background: var(--ink); color: var(--paper); border: 0; }
+  .card.salmon { background: var(--salmon); border: 0; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .muted { color: var(--muted); } .small { font-size: 12.5px; } .tiny { font-size: 11px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 12px; padding: 13px 16px; font-weight: 700; font-size: 14.5px; background: var(--terra); color: var(--paper); width: 100%; }
+  .btn.sec { background: var(--white); color: var(--ink); border: 1px solid var(--line); }
+  .btn.ghost { background: transparent; color: var(--terra); border: 1px solid var(--terra); }
+  .btn.dark { background: var(--ink); }
+  .btn.sm { padding: 8px 12px; font-size: 12.5px; width: auto; border-radius: 10px; }
+  .btn:disabled { opacity: .45; }
+  .btn.apple { background: #000; color: #fff; }
+  .badge { display: inline-block; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; padding: 4px 9px; border-radius: 999px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .kpi { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .kpi small { display: block; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); font-weight: 700; margin-bottom: 3px; }
+  .kpi b { font-family: var(--num); font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+  .kpi .s { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .seg { display: flex; background: #EFE3D6; border-radius: 999px; padding: 4px; gap: 2px; }
+  .seg button { flex: 1; border: 0; background: transparent; border-radius: 999px; padding: 9px 6px; font-weight: 700; font-size: 12.5px; color: var(--muted); }
+  .seg button.on { background: var(--ink); color: var(--paper); }
+  .opt { border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: var(--white); display: flex; align-items: center; gap: 10px; }
+  .opt.on { border-color: var(--terra); background: #FBEFE8; }
+  .opt .dot { width: 12px; height: 12px; border-radius: 50%; flex: 0 0 12px; }
+  .opt b { display: block; font-size: 14px; } .opt span { display: block; font-size: 12px; color: var(--muted); }
+  .stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; background: var(--white); }
+  .stepper button { width: 34px; height: 34px; border: 0; background: transparent; font-size: 18px; color: var(--terra); font-weight: 800; }
+  .stepper span { min-width: 28px; text-align: center; font-family: var(--num); font-weight: 800; }
+  .item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .item:last-child { border-bottom: 0; }
+  .item .nm b { display: block; font-size: 14px; } .item .nm span { display: block; font-size: 12px; color: var(--muted); }
+  .price { font-family: var(--num); font-weight: 800; }
+  .plano { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 10px; }
+  .plano svg { width: 100%; height: auto; display: block; }
+  .leyenda { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .qrbox { background: var(--ink); border-radius: 18px; padding: 16px; display: flex; gap: 14px; align-items: center; color: var(--paper); }
+  .qrbox .qr { background: var(--paper); border-radius: 12px; padding: 8px; flex: 0 0 auto; }
+  .qrbox .qr img, .qrbox .qr canvas { display: block; width: 132px; height: 132px; }
+  .qrbox .t b { display: block; font-family: var(--num); font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin-top: 6px; line-height: 1; }
+  .qrbox .t span { display: block; font-size: 12px; color: #E9CFC6; margin-top: 5px; line-height: 1.35; }
+  .qrbox .t .st { color: #7ED3A0; font-weight: 700; font-size: 12px; margin-top: 6px; }
+  .bar { height: 8px; border-radius: 999px; background: #EAD9CC; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--terra); }
+  .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; z-index: 60; max-width: 90vw; text-align: center; }
+  .sheet-bg { position: fixed; inset: 0; background: rgba(50,7,7,.55); z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+  .sheet { background: var(--paper); width: 100%; max-width: 480px; border-radius: 22px 22px 0 0; padding: 16px 16px calc(18px + env(safe-area-inset-bottom)) 16px; max-height: 88vh; overflow: auto; }
+  .sheet.dark { background: #0B0B0B; color: #fff; }
+  .handle { width: 42px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 12px auto; }
+  .friend { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .friend:last-child { border-bottom: 0; }
+  .friend .av { width: 36px; height: 36px; border-radius: 50%; background: var(--salmon); color: var(--ink); font-weight: 800; font-size: 12px; display: grid; place-items: center; flex: 0 0 36px; }
+  .friend .nm { flex: 1; } .friend .nm b { display: block; font-size: 14px; } .friend .nm span { display: block; font-size: 12px; color: var(--muted); }
+  .check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--line); display: grid; place-items: center; }
+  .check.on { background: var(--terra); border-color: var(--terra); color: var(--paper); font-size: 13px; font-weight: 800; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 999px; background: var(--white); border: 1px solid var(--line); color: var(--ink); }
+  .pill.ok { background: #DDF3E6; border-color: #DDF3E6; color: #1F7A4D; }
+  .pill.warn { background: #FBEBC8; border-color: #FBEBC8; color: #7A5A00; }
+  .pill.bad { background: #F9D9DB; border-color: #F9D9DB; color: #8B1E25; }
+  input.txt, select.txt, textarea.txt { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: var(--white); color: var(--ink); }
+  label.lbl { display: block; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); font-weight: 700; margin: 10px 0 5px 0; }
+  .steps { display: flex; gap: 6px; margin: 4px 0 12px 0; }
+  .steps i { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+  .steps i.on { background: var(--terra); }
+  .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+  .hero { position: relative; border-radius: 16px; overflow: hidden; height: 150px; }
+  .hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hero .cap { position: absolute; left: 0; right: 0; bottom: 0; background: var(--ink); color: var(--paper); padding: 8px 12px; font-size: 12px; display: flex; justify-content: space-between; }
+  .spin { width: 28px; height: 28px; border: 3px solid #333; border-top-color: #fff; border-radius: 50%; animation: sp 0.9s linear infinite; margin: 0 auto; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+  .okmark { width: 64px; height: 64px; border-radius: 50%; background: #1F7A4D; color: #fff; display: grid; place-items: center; font-size: 30px; margin: 0 auto; }
+  .orderstate { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: #EFE3D6; color: var(--muted); }
+  .orderstate.preparando { background: #FBEBC8; color: #7A5A00; } .orderstate.entregado { background: #DDF3E6; color: #1F7A4D; } .orderstate.nuevo { background: #F3E4DC; color: var(--rust); }
+  .link { color: var(--terra); font-weight: 700; background: none; border: 0; padding: 0; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <img src="../shared/img/logo_cream.png" alt="Canta Corazón">
+    <div style="display:flex; gap:8px; align-items:center;">
+      <span class="chip" id="chipSuc">Polanco</span>
+      <button class="avatar" id="btnUser" title="Cambiar de usuario (demo)">M</button>
+    </div>
+  </header>
+  <main id="main"></main>
+  <nav class="bottom"><div class="inner" id="nav"></div></nav>
+</div>
+<div id="overlay"></div>
+<div id="toast"></div>
+
+<script src="../shared/vendor/qrcode.min.js"></script>
+<script src="../shared/core.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const h = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; };
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = CC.money;
+
+  // ── sesión de usuario (por pestaña, para poder ser dos amigos a la vez) ──
+  const qsUser = new URLSearchParams(location.search).get('user'); if (qsUser) sessionStorage.setItem('cc_user', qsUser);
+  let userId = sessionStorage.getItem('cc_user') || 'c1';
+  let sucId = sessionStorage.getItem('cc_suc') || 's1';
+  const user = () => CC.cliente(userId) || CC.db.clientes[0];
+  const setUser = (id) => { userId = id; sessionStorage.setItem('cc_user', id); render(); };
+  const setSuc = (id) => { sucId = id; sessionStorage.setItem('cc_suc', id); render(); };
+
+  let view = location.hash.replace('#', '') || 'noche';
+  let toastT = null;
+  function toast(msg) { const t = $('#toast'); t.innerHTML = `<div class="toast">${esc(msg)}</div>`; clearTimeout(toastT); toastT = setTimeout(() => t.innerHTML = '', 2600); }
+  function sheet(html, dark = false) { const o = $('#overlay'); o.innerHTML = `<div class="sheet-bg" id="sheetBg"><div class="sheet ${dark ? 'dark' : ''}">${dark ? '' : '<div class="handle"></div>'}${html}</div></div>`; $('#sheetBg').addEventListener('click', (e) => { if (e.target.id === 'sheetBg') closeSheet(); }); return o.firstChild; }
+  function closeSheet() { $('#overlay').innerHTML = ''; }
+
+  const NAV = [
+    ['reservar', 'Reservar', '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>'],
+    ['noche', 'Mi noche', '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><path d="M13 13h3v3h-3zM17 17h3v3h-3zM17 13h3M13 20h3"/></svg>'],
+    ['amigos', 'Amigos', '<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M2.5 20c.5-4 3.5-6 6.5-6s6 2 6.5 6M15 14.5c2.8 0 5.5 1.6 6 5.5"/></svg>'],
+    ['recompensas', 'Puntos', '<svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9L6.7 19.5l1.1-6L3.4 9.3l6-.8z"/></svg>'],
+    ['perfil', 'Perfil', '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4.5 4-7 8-7s7.2 2.5 8 7"/></svg>']
+  ];
+  function renderNav() { $('#nav').innerHTML = NAV.map(([id, l, ic]) => `<button data-v="${id}" class="${view === id ? 'on' : ''}">${ic}<span>${l}</span></button>`).join(''); $('#nav').querySelectorAll('button').forEach(b => b.onclick = () => { view = b.dataset.v; location.hash = view; render(); }); }
+
+  // ── datos derivados del usuario ──
+  function misReservasHoy() { const u = user(); return CC.db.reservas.filter(r => r.fecha === CC.hoy() && r.estado !== 'liberada' && (r.clienteId === u.id || (r.grupo || []).some(g => g.clienteId === u.id))); }
+  function enLocal(clienteId) { const c = CC.cliente(clienteId); return CC.db.accesos.some(a => a.fecha === CC.hoy() && a.nombre === c.nombre) || CC.db.reservas.some(r => r.fecha === CC.hoy() && r.estado === 'sentada' && (r.clienteId === clienteId || (r.grupo || []).some(g => g.clienteId === clienteId))); }
+
+  // ═══════════════ MI NOCHE ═══════════════
+  function vNoche() {
+    const u = user(); const res = misReservasHoy(); const s = CC.suc(sucId); const n = CC.M.noche(sucId);
+    const parts = [];
+    parts.push(`<div class="eyebrow">${esc(CC.fechaLarga(CC.hoy()))}</div><h1>Hola, ${esc(u.nombre.split(' ')[0])}. <em>Tu noche.</em></h1>`);
+    if (!res.length) {
+      parts.push(`<div class="hero"><img src="../shared/img/meta.jpg" alt=""><div class="cap"><span>${esc(s.nombre)} · esta noche</span><span>Mariachi 11:30 pm</span></div></div>
+      <div class="card" style="margin-top:12px;"><b>Todavía no tienes mesa ni cover para hoy.</b><p class="muted small" style="margin:6px 0 12px 0;">Reserva tu mesa en el plano del local, o compra tu cover, y tu QR llega aquí mismo.</p><button class="btn" id="goReservar">Reservar para esta noche</button></div>`);
+    }
+    res.forEach(r => parts.push(cardReserva(r)));
+    parts.push(`<h2>Esta noche en ${esc(s.nombre)}</h2><div class="grid3">
+      ${CC.db.config.cupoVisible ? `<div class="kpi"><small>Cupo</small><b class="num">${n.ocupPct.toFixed(0)}%</b><span class="s">ocupado</span></div>` : ''}
+      <div class="kpi"><small>Show</small><b style="font-size:14px;">Mariachi</b><span class="s">11:30 pm</span></div>
+      <div class="kpi"><small>Dress code</small><b style="font-size:14px;">Sombrero</b><span class="s">incluido</span></div></div>`);
+    parts.push(`<div class="card" style="margin-top:10px;"><div class="row"><div><b>Pide tu canción</b><div class="muted small">Una dedicatoria con el mariachi, en pantalla y a tu nombre.</div></div><button class="btn sm" id="btnCancion">${money(CC.prod('x_cancion').precio)}</button></div></div>`);
+    parts.push(`<p class="tiny muted" style="margin-top:14px;">Datos ilustrativos · demo. Los pagos se simulan.</p>`);
+    $('#main').innerHTML = parts.join('');
+    const g = $('#goReservar'); if (g) g.onclick = () => { view = 'reservar'; location.hash = view; render(); };
+    $('#btnCancion').onclick = () => sheetCancion();
+    res.forEach(r => wireReserva(r));
+  }
+  function cardReserva(r) {
+    const u = user(); const mesa = r.mesaId ? CC.mesa(r.mesaId) : null; const tipo = CC.TIPOS_QR[r.tipo]; const s = CC.suc(r.suc);
+    const miParte = (r.grupo || []).find(g => g.clienteId === u.id);
+    const soyTitular = r.clienteId === u.id;
+    const pagadoTotal = (r.grupo && r.grupo.length) ? r.grupo.reduce((a, g) => a + g.pagado, 0) : r.pagado;
+    const cta = CC.M.cuentaMesa(r.id);
+    const estadoTxt = r.estado === 'sentada' ? 'Ya estás dentro · mesa asignada' : r.estado === 'confirmada' ? (pagadoTotal >= (r.anticipo || 0) ? 'Anticipo pagado · muestra este QR en la puerta' : 'Falta completar el anticipo del grupo') : r.estado === 'pendiente' ? 'Pago en caja pendiente · tu lugar está apartado' : r.estado;
+    return `<div class="card" style="padding:0; overflow:hidden; margin-top:12px;" data-res="${r.id}">
+      <div class="qrbox" style="border-radius:0;">
+        <div class="qr" id="qr_${r.id}"></div>
+        <div class="t"><span class="badge" style="background:${tipo.color}; color:${tipo.texto};">${tipo.nombre}</span>
+          <b>${mesa ? 'Mesa ' + mesa.num + ' · Piso ' + mesa.piso : (r.tipo === 'cover' ? 'Cover' : 'Barra')}</b>
+          <span>${esc(CC.fechaLarga(r.fecha))} · ${esc(r.hora || '')} · ${r.personas} personas · ${esc(s.nombre)}</span>
+          <span class="st">● ${esc(estadoTxt)}</span></div>
+      </div>
+      <div style="padding:12px 14px;">
+        ${r.motivo ? `<div class="pill" style="margin-bottom:8px;">🎂 ${esc(r.motivo)}</div>` : ''}
+        ${r.grupo && r.grupo.length ? `<div class="small" style="margin-bottom:8px;"><b>Tu grupo</b> · ${r.grupo.filter(g => g.pagado >= g.parte).length} de ${r.grupo.length} ya pagaron su parte</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">${r.grupo.map(g => { const c = CC.cliente(g.clienteId); return `<span class="pill ${g.pagado >= g.parte ? 'ok' : 'warn'}">${esc(c.nombre.split(' ')[0])} · ${money(g.parte)}${g.pagado >= g.parte ? ' ✓' : ''}${enLocal(g.clienteId) ? ' · dentro' : ''}</span>`; }).join('')}</div>` : ''}
+        ${miParte && miParte.pagado < miParte.parte ? `<button class="btn" data-act="pagarparte">Pagar mi parte · ${money(miParte.parte - miParte.pagado)}</button>` : ''}
+        ${mesa ? `<div class="row" style="margin-top:8px;"><div><b>Cuenta de la mesa</b><div class="muted small">${cta.items.length} pedidos · pagado ${money(cta.pagado)} · saldo ${money(cta.saldo)}</div></div><b class="price">${money(cta.total)}</b></div>
+        ${cta.items.length ? `<div style="margin-top:6px;">${cta.items.slice(-4).map(i => `<div class="item"><div class="nm"><b>${i.cant} × ${esc(i.nombre)}</b><span>${esc(i.hora)} · ${esc((CC.cliente(i.porClienteId) || {}).nombre || '').split(' ')[0]}</span></div><span class="orderstate ${i.estado}">${i.estado}</span></div>`).join('')}</div>` : ''}
+        ${(r.preorden || []).length ? `<div class="small muted" style="margin-top:6px;">Preorden lista al llegar: ${r.preorden.map(p => p.cant + ' × ' + esc(CC.prod(p.prodId).nombre)).join(', ')}</div>` : ''}
+        <div class="grid2" style="margin-top:10px;">
+          <button class="btn sec" data-act="pedir">Pedir a la mesa</button>
+          <button class="btn" data-act="cuenta">Dividir y pagar</button>
+        </div>` : ''}
+        <div class="grid2" style="margin-top:8px;">
+          <button class="btn sec sm" data-act="compartir" style="width:100%;">Compartir con mi grupo</button>
+          ${soyTitular && r.estado !== 'sentada' ? `<button class="btn ghost sm" data-act="cancelar" style="width:100%;">Cancelar</button>` : `<button class="btn ghost sm" data-act="wallet" style="width:100%;">Agregar a Wallet</button>`}
+        </div>
+      </div></div>`;
+  }
+  async function wireReserva(r) {
+    const el = $(`[data-res="${r.id}"]`); if (!el) return;
+    const box = $(`#qr_${r.id}`); const token = await CC.tokenQR(r); box.innerHTML = '';
+    new QRCode(box, { text: token, width: 132, height: 132, colorDark: '#320707', colorLight: '#F6EFE4', correctLevel: QRCode.CorrectLevel.M });
+    box.title = token;
+    el.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
+      const a = b.dataset.act;
+      if (a === 'pedir') sheetPedir(r);
+      if (a === 'cuenta') sheetCuenta(r);
+      if (a === 'pagarparte') { const g = r.grupo.find(x => x.clienteId === user().id); sheetPago(g.parte - g.pagado, 'Tu parte de la mesa ' + (CC.mesa(r.mesaId) || {}).num, (metodo, estado) => { g.pagado = g.parte; g.metodo = metodo; CC.registrarPago({ suc: r.suc, clienteId: user().id, reservaId: r.id, concepto: 'Parte de mesa ' + (CC.mesa(r.mesaId) || {}).num, monto: g.parte, metodo, estado }); if (r.grupo.every(x => x.pagado >= x.parte)) r.pagado = r.anticipo; CC.save(); toast('Listo, tu parte quedó pagada'); render(); }); }
+      if (a === 'compartir') { const url = location.href.split('#')[0] + '#noche'; if (navigator.share) navigator.share({ title: 'Nuestra mesa en Canta Corazón', text: 'Mesa ' + (CC.mesa(r.mesaId) || {}).num + ' esta noche. Entra con tu QR desde la app.', url }).catch(() => { }); else { navigator.clipboard && navigator.clipboard.writeText(url); toast('Link copiado para tu grupo'); } }
+      if (a === 'wallet') toast('En la fase real: pase para Apple Wallet y Google Wallet');
+      if (a === 'cancelar') { if (confirm('¿Cancelar tu reserva? El anticipo se devuelve según la política del local.')) { r.estado = 'liberada'; CC.log('app', 'Reserva cancelada ' + r.nombre); CC.save(); toast('Reserva cancelada'); render(); } }
+    });
+  }
+
+  // ═══════════════ PEDIR A LA MESA ═══════════════
+  function sheetPedir(r) {
+    const cats = [['trago', 'Coctelería'], ['botella', 'Botellas'], ['cerveza', 'Cerveza y más'], ['comida', 'Cocina'], ['extra', 'Extras']];
+    let cat = 'trago'; const carrito = {};
+    const draw = () => {
+      const prods = CC.db.productos.filter(p => p.cat === cat && p.id !== 'x_cancion');
+      const total = Object.entries(carrito).reduce((a, [id, c]) => a + CC.prod(id).precio * c, 0);
+      $('#sheetBody').innerHTML = `<div class="seg" style="margin-bottom:10px; overflow:auto;">${cats.map(([id, l]) => `<button data-cat="${id}" class="${cat === id ? 'on' : ''}">${l}</button>`).join('')}</div>
+        ${prods.map(p => `<div class="item"><div class="nm"><b>${esc(p.nombre)}</b><span>${esc(p.desc || '')} ${p.desc ? '· ' : ''}${money(p.precio)}</span></div><div class="stepper"><button data-m="${p.id}">−</button><span>${carrito[p.id] || 0}</span><button data-p="${p.id}">+</button></div></div>`).join('')}
+        <button class="btn" id="btnPedir" ${total ? '' : 'disabled'} style="margin-top:12px;">Pedir ahora · ${money(total)}</button>
+        <p class="tiny muted" style="text-align:center; margin:8px 0 0 0;">Llega a tu mesa sin llamar a un mesero. Se carga a la cuenta de la mesa.</p>`;
+      $('#sheetBody').querySelectorAll('[data-cat]').forEach(b => b.onclick = () => { cat = b.dataset.cat; draw(); });
+      $('#sheetBody').querySelectorAll('[data-p]').forEach(b => b.onclick = () => { carrito[b.dataset.p] = (carrito[b.dataset.p] || 0) + 1; draw(); });
+      $('#sheetBody').querySelectorAll('[data-m]').forEach(b => b.onclick = () => { if (carrito[b.dataset.m]) { carrito[b.dataset.m]--; if (!carrito[b.dataset.m]) delete carrito[b.dataset.m]; } draw(); });
+      const bp = $('#btnPedir'); if (bp) bp.onclick = () => { const items = Object.entries(carrito).map(([id, c]) => ({ prodId: id, cant: c, precio: CC.prod(id).precio, porClienteId: user().id })); CC.crearPedido({ suc: r.suc, mesaId: r.mesaId, reservaId: r.id, items, origen: 'app' }); closeSheet(); toast('Pedido enviado a la barra'); render(); };
+    };
+    sheet(`<div class="row"><b>Pedir a la mesa ${(CC.mesa(r.mesaId) || {}).num}</b><button class="link" id="cls">Cerrar</button></div><div id="sheetBody" style="margin-top:8px;"></div>`);
+    $('#cls').onclick = closeSheet; draw();
+  }
+
+  // ═══════════════ DIVIDIR Y PAGAR ═══════════════
+  function sheetCuenta(r) {
+    const cta = CC.M.cuentaMesa(r.id); const grupo = (r.grupo && r.grupo.length ? r.grupo.map(g => g.clienteId) : [r.clienteId]);
+    let modo = 'iguales'; let propina = 10;
+    const draw = () => {
+      const saldo = cta.saldo; const porPersona = saldo / grupo.length; const tip = saldo * propina / 100;
+      const porConsumo = {}; grupo.forEach(id => porConsumo[id] = 0); cta.items.forEach(i => { if (porConsumo[i.porClienteId] != null) porConsumo[i.porClienteId] += i.precio * i.cant; else porConsumo[r.clienteId] += i.precio * i.cant; });
+      const miMonto = modo === 'iguales' ? porPersona : (porConsumo[user().id] || 0);
+      $('#sheetBody').innerHTML = `<div class="card" style="margin-bottom:10px;"><div class="row"><span class="muted">Consumo de la mesa</span><b class="price">${money(cta.total)}</b></div><div class="row"><span class="muted">Ya pagado (anticipo y partes)</span><b class="price">${money(cta.pagado)}</b></div><div class="row" style="border-top:1px solid var(--line); padding-top:8px; margin-top:6px;"><b>Saldo</b><b class="price">${money(saldo)}</b></div></div>
+        <label class="lbl">Cómo dividimos</label>
+        <div class="seg"><button data-modo="iguales" class="${modo === 'iguales' ? 'on' : ''}">Partes iguales</button><button data-modo="consumo" class="${modo === 'consumo' ? 'on' : ''}">Lo que cada quien pidió</button></div>
+        <div style="margin-top:10px;">${grupo.map(id => { const c = CC.cliente(id); const m = modo === 'iguales' ? porPersona : porConsumo[id]; return `<div class="friend"><div class="av">${CC.iniciales(c.nombre)}</div><div class="nm"><b>${esc(c.nombre)}${id === user().id ? ' (tú)' : ''}</b><span>${modo === 'iguales' ? '1 de ' + grupo.length : 'Por consumo'}</span></div><b class="price">${money(m)}</b></div>`; }).join('')}</div>
+        <label class="lbl">Propina</label><div class="seg">${[0, 10, 15, 20].map(p => `<button data-tip="${p}" class="${propina === p ? 'on' : ''}">${p}%</button>`).join('')}</div>
+        <button class="btn" id="btnPagar" style="margin-top:12px;" ${saldo <= 0 ? 'disabled' : ''}>Pagar mi parte · ${money(miMonto + miMonto * propina / 100)}</button>
+        <button class="btn sec" id="btnSolic" style="margin-top:8px;">Pedir a cada quien su parte</button>
+        <p class="tiny muted" style="text-align:center; margin:8px 0 0 0;">Cada quien paga con su método. Si alguien no paga en 48 horas, el saldo recae en el anfitrión.</p>`;
+      $('#sheetBody').querySelectorAll('[data-modo]').forEach(b => b.onclick = () => { modo = b.dataset.modo; draw(); });
+      $('#sheetBody').querySelectorAll('[data-tip]').forEach(b => b.onclick = () => { propina = Number(b.dataset.tip); draw(); });
+      $('#btnPagar').onclick = () => { closeSheet(); sheetPago(miMonto + miMonto * propina / 100, 'Mi parte de la cuenta · mesa ' + (CC.mesa(r.mesaId) || {}).num, (metodo, estado) => { CC.registrarPago({ suc: r.suc, clienteId: user().id, reservaId: r.id, concepto: 'Cuenta mesa ' + (CC.mesa(r.mesaId) || {}).num, monto: Math.round(miMonto), metodo, estado, propina: Math.round(miMonto * propina / 100) }); toast('Pago registrado'); render(); }); };
+      $('#btnSolic').onclick = () => { closeSheet(); toast('Solicitudes enviadas a tu grupo por WhatsApp'); };
+    };
+    sheet(`<div class="row"><b>Dividir y pagar</b><button class="link" id="cls">Cerrar</button></div><div id="sheetBody" style="margin-top:8px;"></div>`);
+    $('#cls').onclick = closeSheet; draw();
+  }
+
+  // ═══════════════ PAGO (simulado) ═══════════════
+  function sheetPago(monto, concepto, onOk) {
+    const draw = (metodo) => {
+      const body = $('#payBody');
+      if (metodo === 'applepay') { body.innerHTML = `<div class="sheet dark" style="padding:0; background:transparent;"><div style="background:#0B0B0B; border-radius:18px; padding:18px; color:#fff;"><div class="row"><b style="font-size:16px;"> Pay</b><span class="small" style="color:#aaa;">•••• 4821</span></div><div class="row" style="margin-top:14px; border-top:1px solid #222; padding-top:12px;"><span style="color:#aaa;">Canta Corazón</span><b class="price" style="font-size:20px;">${money(monto)}</b></div><div class="small" style="color:#aaa; margin-top:4px;">${esc(concepto)}</div><div id="payState" style="margin-top:18px; text-align:center;"><button class="btn apple" id="btnFace" style="background:#fff; color:#000;">Confirmar con Face ID</button></div></div></div>`; $('#btnFace').onclick = () => { $('#payState').innerHTML = '<div class="spin"></div><div class="small" style="color:#aaa; margin-top:8px;">Procesando…</div>'; setTimeout(() => { $('#payState').innerHTML = '<div class="okmark">✓</div><div style="margin-top:8px; font-weight:700;">Listo</div>'; setTimeout(() => { closeSheet(); onOk('applepay', 'aprobado'); }, 700); }, 1300); }; }
+      if (metodo === 'tarjeta') { body.innerHTML = `<label class="lbl">Número de tarjeta</label><input class="txt" value="4242 4242 4242 4242"><div class="grid2"><div><label class="lbl">Vence</label><input class="txt" value="09/29"></div><div><label class="lbl">CVV</label><input class="txt" value="•••"></div></div><button class="btn" id="btnCard" style="margin-top:12px;">Pagar ${money(monto)}</button>`; $('#btnCard').onclick = () => { $('#btnCard').innerHTML = 'Procesando…'; setTimeout(() => { closeSheet(); onOk('tarjeta', 'aprobado'); }, 1200); }; }
+      if (metodo === 'spei') { body.innerHTML = `<div class="card"><div class="small muted">Transfiere a</div><b>CLABE 012 180 0015 4321 8765 43</b><div class="small muted" style="margin-top:6px;">Referencia</div><b class="num">CC-${String(Date.now()).slice(-6)}</b><div class="small muted" style="margin-top:6px;">Monto exacto</div><b class="price">${money(monto)}</b></div><button class="btn" id="btnSpei" style="margin-top:12px;">Ya transferí</button><p class="tiny muted" style="text-align:center; margin-top:8px;">Se confirma automáticamente al llegar el depósito.</p>`; $('#btnSpei').onclick = () => { closeSheet(); onOk('spei', 'aprobado'); }; }
+      if (metodo === 'efectivo') { body.innerHTML = `<div class="card"><b>Pagas en caja al llegar</b><p class="small muted" style="margin:6px 0 0 0;">Tu lugar queda apartado hasta las 11:00 pm. El cajero confirma el pago en el sistema y tu QR se activa por completo.</p></div><button class="btn" id="btnCash" style="margin-top:12px;">Apartar y pagar en caja</button>`; $('#btnCash').onclick = () => { closeSheet(); onOk('efectivo', 'pendiente_caja'); }; }
+    };
+    sheet(`<div class="row"><b>Pagar ${money(monto)}</b><button class="link" id="cls">Cerrar</button></div><div class="small muted">${esc(concepto)}</div>
+      <div class="grid2" style="margin-top:12px;"><button class="btn apple" data-pm="applepay"> Pay</button><button class="btn sec" data-pm="tarjeta">Tarjeta</button><button class="btn sec" data-pm="spei">Transferencia SPEI</button><button class="btn sec" data-pm="efectivo">Efectivo en caja</button></div>
+      <div id="payBody" style="margin-top:12px;"></div>`);
+    $('#cls').onclick = closeSheet;
+    document.querySelectorAll('[data-pm]').forEach(b => b.onclick = () => draw(b.dataset.pm));
+    draw('applepay');
+  }
+
+  // ═══════════════ CANCIÓN ═══════════════
+  function sheetCancion() {
+    const res = misReservasHoy().find(r => r.mesaId);
+    sheet(`<div class="row"><b>Pide tu canción</b><button class="link" id="cls">Cerrar</button></div>
+      <label class="lbl">Canción</label><input class="txt" id="cSong" placeholder="Amor eterno, El Rey, Como la flor…">
+      <label class="lbl">Dedicatoria (aparece en pantalla)</label><textarea class="txt" id="cDed" rows="2" placeholder="Para Sofía, de todos nosotros"></textarea>
+      <button class="btn" id="cGo" style="margin-top:12px;">Pedir con el mariachi · ${money(CC.prod('x_cancion').precio)}</button>`);
+    $('#cls').onclick = closeSheet;
+    $('#cGo').onclick = () => { const song = $('#cSong').value.trim(); if (!song) { toast('Escribe la canción'); return; } closeSheet(); sheetPago(CC.prod('x_cancion').precio, 'Dedicatoria: ' + song, (metodo, estado) => { CC.db.canciones.push({ id: CC.uid('sg'), suc: sucId, mesaId: res ? res.mesaId : null, cancion: song, dedicatoria: $('#cDed') ? '' : '', monto: CC.prod('x_cancion').precio, estado: 'en cola', hora: CC.ahoraHM(), clienteId: user().id }); CC.registrarPago({ suc: sucId, clienteId: user().id, reservaId: res ? res.id : null, concepto: 'Dedicatoria: ' + song, monto: CC.prod('x_cancion').precio, metodo, estado }); CC.save(); toast('Tu canción entró a la cola del mariachi'); render(); }); };
+  }
+
+  // ═══════════════ RESERVAR ═══════════════
+  const R = { paso: 1, suc: null, tipo: 'mesa', personas: 4, piso: 1, mesaId: null, pre: {}, amigos: [], hora: '22:30', motivo: '' };
+  function vReservar() {
+    R.suc = R.suc || sucId; const s = CC.suc(R.suc);
+    const pasos = ['Qué', 'Dónde', 'Preorden', 'Grupo y pago'];
+    let body = `<div class="eyebrow">Reservar · ${esc(CC.fechaLarga(CC.hoy()))}</div><h1>${R.paso === 1 ? 'Tu noche, <em>a tu medida.</em>' : R.paso === 2 ? 'Escoge tu mesa <em>en el plano.</em>' : R.paso === 3 ? 'Botellas listas <em>al llegar.</em>' : 'Divide y <em>paga.</em>'}</h1>
+      <div class="steps">${pasos.map((p, i) => `<i class="${i < R.paso ? 'on' : ''}"></i>`).join('')}</div>`;
+    if (R.paso === 1) {
+      body += `<label class="lbl">Sucursal</label><div class="seg">${CC.SUCURSALES().map(x => `<button data-suc="${x.id}" class="${R.suc === x.id ? 'on' : ''}">${esc(x.nombre)}</button>`).join('')}</div>
+        <label class="lbl">Qué quieres</label>
+        <div style="display:grid; gap:8px;">${[['cover', 'Cover', 'Entrada general · ' + money(CC.PRECIOS().cover)], ['barra', 'Barra', 'Acceso con consumo en barra · ' + money(CC.PRECIOS().barra)], ['mesa', 'Mesa', 'Anticipo desde ' + money(3000) + ' · consumo mínimo'], ['vip', 'Mesa VIP', 'Anticipo desde ' + money(6000) + ' · frente al escenario o salón']].map(([id, n, d]) => `<div class="opt ${R.tipo === id ? 'on' : ''}" data-tipo="${id}"><span class="dot" style="background:${CC.TIPOS_QR[id].color}"></span><div><b>${n}</b><span>${d}</span></div></div>`).join('')}</div>
+        <label class="lbl">Cuántos van</label><div class="row"><div class="stepper"><button id="pMenos">−</button><span id="pNum">${R.personas}</span><button id="pMas">+</button></div><div class="small muted">Incluyéndote</div></div>
+        <label class="lbl">Hora de llegada</label><div class="seg">${['21:00', '22:30', '23:30', '00:30'].map(hh => `<button data-hora="${hh}" class="${R.hora === hh ? 'on' : ''}">${hh}</button>`).join('')}</div>
+        <label class="lbl">Motivo (opcional)</label><input class="txt" id="motivo" placeholder="Cumpleaños, despecho, celebración…" value="${esc(R.motivo)}">
+        <button class="btn" id="next" style="margin-top:14px;">Continuar</button>`;
+    }
+    if (R.paso === 2) {
+      const pisos = Array.from({ length: s.pisos }, (_, i) => i + 1);
+      body += `<div class="seg" style="margin-bottom:10px;">${pisos.map(p => `<button data-piso="${p}" class="${R.piso === p ? 'on' : ''}">Piso ${p}</button>`).join('')}</div>
+        <div class="plano">${svgPlano(R.suc, R.piso, R.mesaId, true)}<div class="leyenda"><span><i style="background:var(--white); border:1px solid var(--terra);"></i>Libre</span><span><i style="background:var(--salmon);"></i>Apartada</span><span><i style="background:var(--ink);"></i>Ocupada</span><span><i style="background:var(--white); border:2px solid var(--gold);"></i>VIP</span><span><i style="background:var(--terra);"></i>Tu selección</span></div></div>
+        <div id="mesaInfo" style="margin-top:10px;">${R.mesaId ? infoMesa(CC.mesa(R.mesaId)) : '<div class="card muted small">Toca una mesa libre para ver capacidad, consumo mínimo y anticipo.</div>'}</div>
+        <div class="grid2" style="margin-top:12px;"><button class="btn sec" id="back">Atrás</button><button class="btn" id="next" ${R.mesaId ? '' : 'disabled'}>Continuar</button></div>`;
+    }
+    if (R.paso === 3) {
+      const prods = CC.db.productos.filter(p => p.cat === 'botella' || p.id === 'x_sombrero' || p.id === 'x_pastel');
+      const total = Object.entries(R.pre).reduce((a, [id, c]) => a + CC.prod(id).precio * c, 0);
+      body += `<p class="lead">Lo que pidas ahora te espera servido en la mesa. Cuenta para tu consumo mínimo.</p>
+        ${prods.map(p => `<div class="item"><div class="nm"><b>${esc(p.nombre)}</b><span>${money(p.precio)}${p.cat === 'botella' ? ' · preventa' : ''}</span></div><div class="stepper"><button data-m="${p.id}">−</button><span>${R.pre[p.id] || 0}</span><button data-p="${p.id}">+</button></div></div>`).join('')}
+        <div class="row" style="margin-top:10px;"><b>Preorden</b><b class="price">${money(total)}</b></div>
+        <div class="grid2" style="margin-top:12px;"><button class="btn sec" id="back">Atrás</button><button class="btn" id="next">${total ? 'Continuar' : 'Sin preorden, continuar'}</button></div>`;
+    }
+    if (R.paso === 4) {
+      const mesa = R.mesaId ? CC.mesa(R.mesaId) : null; const u = user();
+      const anticipo = mesa ? mesa.anticipo : (R.tipo === 'cover' ? CC.PRECIOS().cover * R.personas : CC.PRECIOS().barra * R.personas);
+      const pre = Object.entries(R.pre).reduce((a, [id, c]) => a + CC.prod(id).precio * c, 0);
+      const total = anticipo + pre; const n = 1 + R.amigos.length; const parte = Math.ceil(total / n);
+      body += `<div class="card"><div class="row"><div><b>${mesa ? 'Mesa ' + mesa.num + ' · Piso ' + mesa.piso + (mesa.salon ? ' · ' + mesa.salon : '') : CC.TIPOS_QR[R.tipo].nombre}</b><div class="small muted">${esc(s.nombre)} · ${R.hora} · ${R.personas} personas</div></div><span class="badge" style="background:${CC.TIPOS_QR[mesa ? mesa.tipo : R.tipo].color}; color:${CC.TIPOS_QR[mesa ? mesa.tipo : R.tipo].texto}">${CC.TIPOS_QR[mesa ? mesa.tipo : R.tipo].nombre}</span></div>
+        <div class="item" style="margin-top:6px;"><span class="muted">${mesa ? 'Anticipo de mesa' : 'Accesos'}</span><b class="price">${money(anticipo)}</b></div>
+        ${pre ? `<div class="item"><span class="muted">Preorden</span><b class="price">${money(pre)}</b></div>` : ''}
+        <div class="item"><b>Total a pagar hoy</b><b class="price">${money(total)}</b></div>
+        ${mesa ? `<div class="tiny muted" style="margin-top:6px;">Consumo mínimo de la mesa: ${money(mesa.minimo)}. El anticipo y la preorden cuentan.</div>` : ''}</div>
+        <h2>Dividir con amigos</h2>
+        <div class="card" style="padding:6px 14px;">${u.amigos.map(id => { const c = CC.cliente(id); const on = R.amigos.includes(id); return `<div class="friend" data-amigo="${id}"><div class="av">${CC.iniciales(c.nombre)}</div><div class="nm"><b>${esc(c.nombre)}</b><span>${c.nivel === 'vip' ? 'Cliente VIP · ' : ''}${c.visitas} visitas</span></div><div class="check ${on ? 'on' : ''}">${on ? '✓' : ''}</div></div>`; }).join('')}</div>
+        <div class="card salmon" style="margin-top:10px;"><div class="row"><div><b>${n === 1 ? 'Pagas todo tú' : 'Entre ' + n + ' personas'}</b><div class="small">${n === 1 ? 'Puedes dividir después desde Mi noche.' : 'Tú pagas tu parte ahora; a cada amigo le llega su solicitud por WhatsApp y en su app.'}</div></div><b class="price">${money(parte)}<span class="small" style="font-weight:600;"> c/u</span></b></div></div>
+        <div class="grid2" style="margin-top:12px;"><button class="btn sec" id="back">Atrás</button><button class="btn" id="pay">Pagar ${money(parte)}</button></div>`;
+    }
+    $('#main').innerHTML = body;
+    // wiring
+    document.querySelectorAll('[data-suc]').forEach(b => b.onclick = () => { R.suc = b.dataset.suc; R.mesaId = null; R.piso = 1; setSuc(R.suc); });
+    document.querySelectorAll('[data-tipo]').forEach(b => b.onclick = () => { R.tipo = b.dataset.tipo; render(); });
+    document.querySelectorAll('[data-hora]').forEach(b => b.onclick = () => { R.hora = b.dataset.hora; render(); });
+    document.querySelectorAll('[data-piso]').forEach(b => b.onclick = () => { R.piso = Number(b.dataset.piso); R.mesaId = null; render(); });
+    const pm = $('#pMenos'), pp = $('#pMas'); if (pm) pm.onclick = () => { R.personas = Math.max(1, R.personas - 1); render(); }; if (pp) pp.onclick = () => { R.personas = Math.min(16, R.personas + 1); render(); };
+    const mo = $('#motivo'); if (mo) mo.oninput = () => R.motivo = mo.value;
+    document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { R.pre[b.dataset.p] = (R.pre[b.dataset.p] || 0) + 1; render(); });
+    document.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { if (R.pre[b.dataset.m]) { R.pre[b.dataset.m]--; if (!R.pre[b.dataset.m]) delete R.pre[b.dataset.m]; } render(); });
+    document.querySelectorAll('[data-amigo]').forEach(b => b.onclick = () => { const id = b.dataset.amigo; R.amigos = R.amigos.includes(id) ? R.amigos.filter(x => x !== id) : R.amigos.concat(id); render(); });
+    document.querySelectorAll('[data-mesa]').forEach(el => el.addEventListener('click', () => { const m = CC.mesa(el.dataset.mesa); if (estadoMesa(m) !== 'libre') { toast('Esa mesa ya está ' + estadoMesa(m)); return; } R.mesaId = m.id; R.tipo = m.tipo; render(); }));
+    const nx = $('#next'); if (nx) nx.onclick = () => { if (R.paso === 1 && (R.tipo === 'cover' || R.tipo === 'barra')) { R.mesaId = null; R.paso = 4; } else R.paso++; render(); };
+    const bk = $('#back'); if (bk) bk.onclick = () => { if (R.paso === 4 && (R.tipo === 'cover' || R.tipo === 'barra')) R.paso = 1; else R.paso--; render(); };
+    const py = $('#pay'); if (py) py.onclick = confirmarReserva;
+  }
+  function estadoMesa(m) { const r = CC.db.reservas.find(x => x.mesaId === m.id && x.fecha === CC.hoy() && (x.estado === 'confirmada' || x.estado === 'sentada' || x.estado === 'pendiente')); if (!r) return 'libre'; return r.estado === 'sentada' ? 'ocupada' : 'apartada'; }
+  function infoMesa(m) { return `<div class="card"><div class="row"><div><b>Mesa ${m.num} · Piso ${m.piso}${m.salon ? ' · ' + esc(m.salon) : ''}</b><div class="small muted">Hasta ${m.cap} personas · ${CC.TIPOS_QR[m.tipo].nombre}</div></div><span class="badge" style="background:${CC.TIPOS_QR[m.tipo].color}; color:${CC.TIPOS_QR[m.tipo].texto}">${CC.TIPOS_QR[m.tipo].nombre}</span></div><div class="grid2" style="margin-top:8px;"><div class="kpi"><small>Anticipo</small><b class="num">${money(m.anticipo)}</b></div><div class="kpi"><small>Consumo mínimo</small><b class="num">${money(m.minimo)}</b></div></div></div>`; }
+  function svgPlano(suc, piso, selId, interactivo) {
+    const mesas = CC.db.mesas.filter(m => m.suc === suc && m.piso === piso);
+    const f = (v) => (v * 3.6).toFixed(1); // 100 -> 360 unidades
+    let out = `<svg viewBox="0 0 360 330" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="360" height="330" rx="14" fill="#F6EFE4"/>
+      <rect x="90" y="6" width="180" height="28" rx="8" fill="#320707"/><text x="180" y="24" text-anchor="middle" font-size="11" font-weight="700" fill="#F6EFE4" font-family="Montserrat, sans-serif">${piso === 1 ? 'BARRA Y ESCENARIO' : 'BALCÓN · SALONES'}</text>
+      ${piso === 1 ? '<rect x="120" y="96" width="120" height="50" rx="12" fill="#EFE3D6"/><text x="180" y="125" text-anchor="middle" font-size="10" fill="#A88C82" font-family="Montserrat, sans-serif">PISTA · CORO</text>' : ''}
+      <rect x="150" y="302" width="60" height="22" rx="6" fill="#EFE3D6"/><text x="180" y="317" text-anchor="middle" font-size="9" fill="#A88C82" font-family="Montserrat, sans-serif">ENTRADA</text>`;
+    mesas.forEach(m => {
+      const est = estadoMesa(m); const sel = m.id === selId;
+      const fill = sel ? '#C25B32' : est === 'ocupada' ? '#320707' : est === 'apartada' ? '#F3C8B4' : '#FFFDF9';
+      const stroke = sel ? '#C25B32' : m.tipo === 'vip' ? '#C99A2E' : '#C25B32';
+      const txt = sel || est === 'ocupada' ? '#F6EFE4' : '#320707';
+      const x = f(m.x) - f(m.w) / 2, y = f(m.y) - f(m.h) / 2 + 20, w = f(m.w), hh = f(m.h);
+      out += `<g ${interactivo ? `data-mesa="${m.id}" style="cursor:pointer"` : ''}><rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="${m.salon ? 8 : 16}" fill="${fill}" stroke="${stroke}" stroke-width="${m.tipo === 'vip' ? 2.5 : 1.5}"/><text x="${Number(x) + Number(w) / 2}" y="${Number(y) + Number(hh) / 2 + 4}" text-anchor="middle" font-size="${m.salon ? 10 : 11}" font-weight="800" fill="${txt}" font-family="Inter Tight, Montserrat, sans-serif">${m.salon ? m.salon.split(' ')[1] : m.num}</text></g>`;
+    });
+    return out + '</svg>';
+  }
+  function confirmarReserva() {
+    const s = CC.suc(R.suc); const mesa = R.mesaId ? CC.mesa(R.mesaId) : null; const u = user();
+    const anticipo = mesa ? mesa.anticipo : (R.tipo === 'cover' ? CC.PRECIOS().cover * R.personas : CC.PRECIOS().barra * R.personas);
+    const pre = Object.entries(R.pre).reduce((a, [id, c]) => a + CC.prod(id).precio * c, 0);
+    const total = anticipo + pre; const n = 1 + R.amigos.length; const parte = Math.ceil(total / n);
+    sheetPago(parte, (mesa ? 'Anticipo mesa ' + mesa.num : CC.TIPOS_QR[R.tipo].nombre) + ' · ' + s.nombre, (metodo, estado) => {
+      const grupo = n > 1 ? [{ clienteId: u.id, parte, pagado: parte, metodo }].concat(R.amigos.map(id => ({ clienteId: id, parte, pagado: 0 }))) : [];
+      const r = CC.crearReserva({ suc: R.suc, hora: R.hora, tipo: mesa ? mesa.tipo : R.tipo, mesaId: mesa ? mesa.id : null, clienteId: u.id, nombre: u.nombre, personas: R.personas, estado: estado === 'pendiente_caja' ? 'pendiente' : 'confirmada', anticipo: total, pagado: n > 1 ? parte : total, metodo, origen: 'app', grupo, preorden: Object.entries(R.pre).map(([id, c]) => ({ prodId: id, cant: c })), motivo: R.motivo });
+      CC.registrarPago({ suc: R.suc, clienteId: u.id, reservaId: r.id, concepto: (mesa ? 'Anticipo mesa ' + mesa.num : CC.TIPOS_QR[R.tipo].nombre) + (n > 1 ? ' (grupo)' : ''), monto: parte, metodo, estado });
+      if (mesa) { u.visitas += 0; } u.puntos += Math.round(parte / 10); CC.save();
+      R.paso = 1; R.mesaId = null; R.pre = {}; R.amigos = []; R.motivo = '';
+      toast(n > 1 ? 'Listo. Tu QR está en Mi noche; a tus amigos les llegó su parte.' : 'Listo. Tu QR está en Mi noche.');
+      view = 'noche'; location.hash = view; render();
+    });
+  }
+
+  // ═══════════════ AMIGOS ═══════════════
+  function vAmigos() {
+    const u = user(); const pend = misReservasHoy().flatMap(r => (r.grupo || []).filter(g => g.clienteId === u.id && g.pagado < g.parte).map(g => ({ r, g })));
+    let body = `<div class="eyebrow">Amigos</div><h1>Tu gente, <em>tu mesa.</em></h1>`;
+    if (pend.length) body += `<h2>Te pidieron tu parte</h2>` + pend.map(({ r, g }) => `<div class="card salmon"><div class="row"><div><b>${esc(CC.cliente(r.clienteId).nombre.split(' ')[0])} te invitó a la mesa ${(CC.mesa(r.mesaId) || {}).num}</b><div class="small">${esc(CC.fechaLarga(r.fecha))} · ${r.hora} · ${r.motivo ? esc(r.motivo) : 'Canta Corazón'}</div></div><button class="btn sm" data-pay="${r.id}">Pagar ${money(g.parte - g.pagado)}</button></div></div>`).join('');
+    body += `<h2>Mis amigos en Canta Corazón</h2><div class="card" style="padding:6px 14px;">${u.amigos.map(id => { const c = CC.cliente(id); const dentro = enLocal(id); return `<div class="friend"><div class="av">${CC.iniciales(c.nombre)}</div><div class="nm"><b>${esc(c.nombre)}</b><span>${c.nivel === 'vip' ? 'VIP · ' : ''}${c.visitas} visitas${dentro ? ' · <span style="color:#1F7A4D; font-weight:700;">está en el local</span>' : ''}</span></div><button class="btn sec sm" data-promo="${id}">Mandar promo</button></div>`; }).join('')}</div>
+      <div class="card" style="margin-top:10px;"><b>Invita a un amigo</b><p class="small muted" style="margin:6px 0 10px 0;">Cuando se registre con tu link, los dos reciben una cortesía en su siguiente visita.</p><button class="btn sec" id="btnInv">Compartir mi link</button></div>
+      <div class="card" style="margin-top:10px;"><b class="small">Demo</b><p class="small muted" style="margin:6px 0 10px 0;">Para ver la app como uno de tus amigos, toca tu avatar arriba a la derecha y cambia de usuario.</p></div>`;
+    $('#main').innerHTML = body;
+    document.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => { const r = CC.db.reservas.find(x => x.id === b.dataset.pay); const g = r.grupo.find(x => x.clienteId === u.id); sheetPago(g.parte - g.pagado, 'Tu parte de la mesa ' + (CC.mesa(r.mesaId) || {}).num, (metodo, estado) => { g.pagado = g.parte; g.metodo = metodo; CC.registrarPago({ suc: r.suc, clienteId: u.id, reservaId: r.id, concepto: 'Parte de mesa ' + (CC.mesa(r.mesaId) || {}).num, monto: g.parte, metodo, estado }); if (r.grupo.every(x => x.pagado >= x.parte)) r.pagado = r.anticipo; CC.save(); toast('Pagado. Tu QR ya está en Mi noche'); render(); }); });
+    document.querySelectorAll('[data-promo]').forEach(b => b.onclick = () => toast('Promo enviada por WhatsApp: 2x1 en coctelería antes de las 10 pm'));
+    $('#btnInv').onclick = () => { navigator.clipboard && navigator.clipboard.writeText(location.href.split('#')[0] + '?ref=' + u.id); toast('Link copiado'); };
+  }
+
+  // ═══════════════ RECOMPENSAS ═══════════════
+  function vRecompensas() {
+    const u = user(); const meta = 2500; const falt = Math.max(0, meta - u.puntos);
+    const promos = [['2x1 en coctelería', 'Antes de las 10 pm, esta semana', 0], ['Botella de cortesía', 'En tu octava visita', 2500], ['Sombrero de la casa', 'Canje inmediato', 800], ['Cover gratis para un amigo', 'Válido jueves', 600]];
+    $('#main').innerHTML = `<div class="eyebrow">Recompensas</div><h1>${u.nivel === 'vip' ? 'Cliente VIP.' : u.nivel === 'frecuente' ? 'Cliente frecuente.' : 'Bienvenido.'} <em>${u.puntos.toLocaleString('es-MX')} puntos.</em></h1>
+      <div class="card ink"><div class="row"><div><div class="tiny" style="letter-spacing:.14em; text-transform:uppercase; color:#E9CFC6;">Nivel ${esc(u.nivel)}</div><b class="num" style="font-size:26px;">${u.puntos.toLocaleString('es-MX')} pts</b></div><div style="text-align:right;"><div class="tiny" style="color:#E9CFC6;">${u.visitas} visitas</div><div class="tiny" style="color:#E9CFC6;">${money(u.gasto)} en total</div></div></div>
+        <div class="bar" style="margin-top:10px; background:#4a2a2a;"><i style="width:${Math.min(100, u.puntos / meta * 100)}%"></i></div><div class="small" style="margin-top:6px; color:#E9CFC6;">${falt ? 'Faltan ' + falt.toLocaleString('es-MX') + ' pts para tu botella de cortesía' : 'Ya tienes tu botella de cortesía: canjéala abajo'}</div></div>
+      <h2>Promociones para ti</h2>
+      ${promos.map(([n, d, c]) => `<div class="card"><div class="row"><div><b>${n}</b><div class="small muted">${d}</div></div><button class="btn sm ${c > u.puntos ? 'sec' : ''}" ${c > u.puntos ? 'disabled' : ''} data-canje="${n}">${c ? c + ' pts' : 'Usar'}</button></div></div>`).join('')}
+      <div class="card salmon" style="margin-top:10px;"><b>Tu cumpleaños es el ${u.cumple.split('-')[1]} de ${CC.MESES_L[Number(u.cumple.split('-')[0]) - 1]}</b><div class="small">Dos semanas antes te llega tu paquete de cumpleaños: mesa, pastel y la primera canción va por la casa.</div></div>
+      <p class="tiny muted" style="margin-top:12px;">Ganas 1 punto por cada $10 de consumo, en ambas sucursales.</p>`;
+    document.querySelectorAll('[data-canje]').forEach(b => b.onclick = () => toast('Canje aplicado: ' + b.dataset.canje));
+  }
+
+  // ═══════════════ PERFIL ═══════════════
+  function vPerfil() {
+    const u = user(); const visitas = CC.db.accesos.filter(a => a.nombre === u.nombre).slice(0, 5);
+    $('#main').innerHTML = `<div class="eyebrow">Perfil</div><h1>${esc(u.nombre)}</h1>
+      <div class="card"><div class="item"><span class="muted">Teléfono</span><b>${esc(u.tel.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3'))}</b></div><div class="item"><span class="muted">Correo</span><b class="small">${esc(u.email)}</b></div><div class="item"><span class="muted">Sucursal favorita</span><b>${esc(CC.suc(u.sucFav).nombre)}</b></div><div class="item"><span class="muted">Nivel</span><span class="pill ${u.nivel === 'vip' ? 'ok' : ''}">${esc(u.nivel)}</span></div></div>
+      <h2>Métodos de pago</h2><div class="card"><div class="item"><b> Pay</b><span class="pill ok">Predeterminado</span></div><div class="item"><b>Visa •••• 4821</b><span class="small muted">09/29</span></div><div class="item"><button class="link">Agregar tarjeta</button></div></div>
+      <h2>Facturación</h2><div class="card"><div class="row"><div><b>Factura tu consumo</b><div class="small muted">CFDI desde el recibo de cada noche, sin ir a caja.</div></div><button class="btn sec sm" id="btnCfdi">Datos fiscales</button></div></div>
+      <h2>Mis noches</h2><div class="card">${visitas.length ? visitas.map(a => `<div class="item"><div class="nm"><b>${esc(CC.fechaLarga(a.fecha))}</b><span>${esc(CC.suc(a.suc).nombre)} · ${esc(CC.TIPOS_QR[a.tipo].nombre)} · ${esc(a.hora)}</span></div><span class="pill ok">Entró</span></div>`).join('') : '<div class="muted small">Tus visitas aparecerán aquí.</div>'}</div>
+      <div class="card" style="margin-top:10px;"><b class="small">Demo</b><div class="grid2" style="margin-top:8px;"><button class="btn sec sm" id="btnSwitch" style="width:100%;">Cambiar de usuario</button><button class="btn ghost sm" id="btnReset" style="width:100%;">Reiniciar datos</button></div></div>`;
+    $('#btnCfdi').onclick = () => toast('En la fase real: RFC, régimen y uso de CFDI guardados una sola vez');
+    $('#btnSwitch').onclick = sheetUsuarios; $('#btnReset').onclick = () => { if (confirm('¿Reiniciar todos los datos del demo en este navegador?')) { CC.reset(); toast('Datos reiniciados'); render(); } };
+  }
+  function sheetUsuarios() {
+    sheet(`<div class="row"><b>¿Quién eres en el demo?</b><button class="link" id="cls">Cerrar</button></div><div class="small muted">Cada pestaña puede ser una persona distinta: así se ve el grupo dividiendo la cuenta.</div><div style="margin-top:8px;">${CC.db.clientes.slice(0, 6).map(c => `<div class="friend" data-u="${c.id}" style="cursor:pointer;"><div class="av" ${c.id === user().id ? 'style="background:var(--terra); color:var(--paper);"' : ''}>${CC.iniciales(c.nombre)}</div><div class="nm"><b>${esc(c.nombre)}</b><span>${c.nivel} · ${c.visitas} visitas</span></div>${c.id === user().id ? '<span class="pill ok">Tú</span>' : ''}</div>`).join('')}</div>`);
+    $('#cls').onclick = closeSheet;
+    document.querySelectorAll('[data-u]').forEach(el => el.onclick = () => { closeSheet(); setUser(el.dataset.u); toast('Ahora eres ' + CC.cliente(el.dataset.u).nombre.split(' ')[0]); });
+  }
+
+  // ═══════════════ render ═══════════════
+  function render() {
+    const u = user(); $('#btnUser').textContent = CC.iniciales(u.nombre); $('#chipSuc').textContent = CC.suc(sucId).nombre;
+    renderNav();
+    ({ noche: vNoche, reservar: vReservar, amigos: vAmigos, recompensas: vRecompensas, perfil: vPerfil }[view] || vNoche)();
+    window.scrollTo(0, 0);
+  }
+  $('#btnUser').onclick = sheetUsuarios;
+  $('#chipSuc').onclick = () => setSuc(sucId === 's1' ? 's2' : 's1');
+  window.addEventListener('hashchange', () => { view = location.hash.replace('#', '') || 'noche'; render(); });
+  CC.on(() => { if (!$('#sheetBg')) render(); });
+  render();
+})();
+</script>
+</body>
+</html>

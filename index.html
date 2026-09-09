@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canta Corazón · Demo del sistema</title>
+<link rel="icon" href="shared/img/fav.svg">
+<link rel="stylesheet" href="shared/brand.css">
+<style>
+  body { background: var(--paper); color: var(--ink); }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 40px 22px 60px 22px; }
+  .logo { height: 22px; display: block; margin-bottom: 26px; }
+  h1 { font-size: 34px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; margin: 0 0 10px 0; }
+  h1 em { font-style: normal; color: var(--terra); }
+  .lead { font-size: 16px; color: var(--muted); max-width: 640px; margin: 0 0 26px 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; }
+  .card.dark { background: var(--dark); color: var(--darktext); border: 0; }
+  .card .eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 8px; }
+  .card h2 { margin: 0 0 8px 0; font-size: 22px; letter-spacing: -.01em; }
+  .card p { margin: 0 0 14px 0; font-size: 14px; color: var(--muted); }
+  .card.dark p { color: var(--darkmuted); }
+  .card ul { margin: 0 0 16px 0; padding: 0 0 0 16px; font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+  .card.dark ul { color: #E9CFC6; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; padding: 13px 16px; font-weight: 700; font-size: 14.5px; background: var(--terra); color: var(--paper); text-decoration: none; margin-top: auto; }
+  .btn.sec { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+  .steps { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 22px; margin-top: 16px; }
+  .steps h3 { margin: 0 0 10px 0; font-size: 15px; }
+  .steps ol { margin: 0; padding-left: 20px; font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .qr { display: flex; gap: 16px; align-items: center; margin-top: 16px; background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 16px 22px; }
+  .qr img, .qr canvas { width: 96px; height: 96px; display: block; }
+  .qr b { display: block; font-size: 14px; } .qr span { font-size: 12.5px; color: var(--muted); }
+  .foot { margin-top: 26px; font-size: 12px; color: var(--dim); }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 28px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="logo" src="shared/img/logo_cream.png" alt="Canta Corazón">
+  <h1>Todo el saloon, <em>en una sola base de datos.</em></h1>
+  <p class="lead">Demo funcional del sistema integral para Canta Corazón: la app interna para operar y la app del cliente para reservar, pagar, entrar y pedir. Las dos comparten los mismos datos en este dispositivo. Datos ilustrativos; pagos y mensajes simulados.</p>
+  <div class="grid">
+    <div class="card dark">
+      <div class="eyebrow">App interna</div>
+      <h2>Operar el saloon</h2>
+      <p>Para socios, gerente, hostess, puerta, barra, caja y compras. Cada rol ve solo lo suyo.</p>
+      <ul><li>Tablero de socios: ventas, ocupación, merma, comparativo por sucursal, día, hora y temporada</li><li>Puerta: escáner de QR que distingue barra, cover, mesa, mesa VIP y cliente VIP</li><li>Mesas: plano vivo por piso, reservas, ficha del cliente, sentar y liberar</li><li>Barra: pedidos en vivo desde la app y de meseros; canciones en cola</li><li>Inventario y merma, compras con factura XML, caja y cortes, clientes, personal</li><li>Asistente de IA que responde con los números del sistema</li></ul>
+      <a class="btn" href="interno/">Abrir app interna</a>
+    </div>
+    <div class="card">
+      <div class="eyebrow">App del cliente</div>
+      <h2>Vivir la noche</h2>
+      <p>Abre desde un link en el celular, sin instalar nada.</p>
+      <ul><li>Reservar: escoge tu mesa en el plano, cuántos van, botellas en preventa</li><li>Divide la mesa con tus amigos y paga con Apple Pay, tarjeta, transferencia o efectivo</li><li>Mi noche: tu QR, tu mesa, tu grupo, la cuenta en vivo y pedir sin mesero</li><li>Pide tu canción con el mariachi</li><li>Amigos: solicitudes de pago y promociones compartidas</li><li>Recompensas: puntos, nivel VIP, promociones y cumpleaños</li></ul>
+      <a class="btn" href="cliente/">Abrir app del cliente</a>
+    </div>
+  </div>
+  <div class="qr"><div id="qrc"></div><div><b>Abre la app del cliente en tu teléfono</b><span>Escanea este código. Si el teléfono y esta computadora no comparten navegador, el QR del cliente igual se valida en la puerta porque va firmado.</span></div></div>
+  <div class="steps"><h3>Recorrido sugerido para la reunión</h3><ol>
+    <li>En la app del cliente, reserva la mesa 14 del piso 1 con dos botellas y divide con dos amigos. Paga con Apple Pay.</li>
+    <li>En la app interna, entra como Puerta y escanea el QR (o usa «Simular escaneo»). Registra la entrada: la mesa aparece ocupada en el plano de la hostess.</li>
+    <li>Desde la app del cliente pide dos tragos a la mesa; entra como Barra y márcalos entregados. La cuenta del cliente se actualiza sola.</li>
+    <li>Entra como Socio: el tablero ya trae la venta, la ocupación y las alertas de la noche. Pregúntale al asistente qué sucursal vendió más.</li>
+    <li>Como Compras, importa la factura XML de ejemplo: el inventario sube solo.</li></ol></div>
+  <p class="foot">Presentan Carlos Martínez y Michel Tron · Septiembre 2026 · Demo con datos ilustrativos.</p>
+</div>
+<script src="shared/vendor/qrcode.min.js"></script>
+<script>new QRCode(document.getElementById('qrc'), { text: location.href.replace(/index\.html$/, '') + 'cliente/', width: 96, height: 96, colorDark: '#320707', colorLight: '#FFFDF9', correctLevel: QRCode.CorrectLevel.M });</script>
+</body>
+</html>
