@@ -66,7 +66,7 @@
   .plano { background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 10px; }
   .plano svg { width: 100%; height: auto; display: block; }
   .leyenda { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin-top: 8px; }
-  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
   .qrbox { background: var(--ink); border-radius: 18px; padding: 16px; display: flex; gap: 14px; align-items: center; color: var(--paper); }
   .qrbox .qr { background: var(--paper); border-radius: 12px; padding: 8px; flex: 0 0 auto; }
   .qrbox .qr img, .qrbox .qr canvas { display: block; width: 132px; height: 132px; }
@@ -304,6 +304,7 @@
 
   // ═══════════════ RESERVAR ═══════════════
   const R = { paso: 1, suc: null, tipo: 'mesa', personas: 4, piso: 1, mesaId: null, pre: {}, amigos: [], hora: '22:30', motivo: '' };
+  { const qp = new URLSearchParams(location.search); if (qp.get('paso') === '2') { R.paso = 2; R.suc = qp.get('suc') || 's1'; } } // link directo al plano
   function vReservar() {
     R.suc = R.suc || sucId; const s = CC.suc(R.suc);
     const pasos = ['Qué', 'Dónde', 'Preorden', 'Grupo y pago'];
@@ -319,9 +320,8 @@
         <button class="btn" id="next" style="margin-top:14px;">Continuar</button>`;
     }
     if (R.paso === 2) {
-      const pisos = Array.from({ length: s.pisos }, (_, i) => i + 1);
-      body += `<div class="seg" style="margin-bottom:10px;">${pisos.map(p => `<button data-piso="${p}" class="${R.piso === p ? 'on' : ''}">Piso ${p}</button>`).join('')}</div>
-        <div class="plano">${svgPlano(R.suc, R.piso, R.mesaId, true)}<div class="leyenda"><span><i style="background:var(--white); border:1px solid var(--terra);"></i>Libre</span><span><i style="background:var(--salmon);"></i>Apartada</span><span><i style="background:var(--ink);"></i>Ocupada</span><span><i style="background:var(--white); border:2px solid var(--gold);"></i>VIP</span><span><i style="background:var(--terra);"></i>Tu selección</span></div></div>
+      body += `<div class="small muted" style="margin-bottom:8px;">${esc(s.nombre)} · ${s.pisos > 1 ? 'planta alta arriba, planta baja abajo' : 'una planta'} · toca una mesa libre</div>
+        <div class="plano">${CC.planoSVG(R.suc, { selId: R.mesaId, interactivo: true })}<div class="leyenda">${CC.PLANO_LEYENDA.map(([k, l]) => `<span><i style="background:${CC.PLANO_COLORES[k]};"></i>${l}</span>`).join('')}</div></div>
         <div id="mesaInfo" style="margin-top:10px;">${R.mesaId ? infoMesa(CC.mesa(R.mesaId)) : '<div class="card muted small">Toca una mesa libre para ver capacidad, consumo mínimo y anticipo.</div>'}</div>
         <div class="grid2" style="margin-top:12px;"><button class="btn sec" id="back">Atrás</button><button class="btn" id="next" ${R.mesaId ? '' : 'disabled'}>Continuar</button></div>`;
     }
@@ -353,7 +353,6 @@
     document.querySelectorAll('[data-suc]').forEach(b => b.onclick = () => { R.suc = b.dataset.suc; R.mesaId = null; R.piso = 1; setSuc(R.suc); });
     document.querySelectorAll('[data-tipo]').forEach(b => b.onclick = () => { R.tipo = b.dataset.tipo; render(); });
     document.querySelectorAll('[data-hora]').forEach(b => b.onclick = () => { R.hora = b.dataset.hora; render(); });
-    document.querySelectorAll('[data-piso]').forEach(b => b.onclick = () => { R.piso = Number(b.dataset.piso); R.mesaId = null; render(); });
     const pm = $('#pMenos'), pp = $('#pMas'); if (pm) pm.onclick = () => { R.personas = Math.max(1, R.personas - 1); render(); }; if (pp) pp.onclick = () => { R.personas = Math.min(16, R.personas + 1); render(); };
     const mo = $('#motivo'); if (mo) mo.oninput = () => R.motivo = mo.value;
     document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { R.pre[b.dataset.p] = (R.pre[b.dataset.p] || 0) + 1; render(); });
@@ -366,24 +365,6 @@
   }
   function estadoMesa(m) { const r = CC.db.reservas.find(x => x.mesaId === m.id && x.fecha === CC.hoy() && (x.estado === 'confirmada' || x.estado === 'sentada' || x.estado === 'pendiente')); if (!r) return 'libre'; return r.estado === 'sentada' ? 'ocupada' : 'apartada'; }
   function infoMesa(m) { return `<div class="card"><div class="row"><div><b>Mesa ${m.num} · Piso ${m.piso}${m.salon ? ' · ' + esc(m.salon) : ''}</b><div class="small muted">Hasta ${m.cap} personas · ${CC.TIPOS_QR[m.tipo].nombre}</div></div><span class="badge" style="background:${CC.TIPOS_QR[m.tipo].color}; color:${CC.TIPOS_QR[m.tipo].texto}">${CC.TIPOS_QR[m.tipo].nombre}</span></div><div class="grid2" style="margin-top:8px;"><div class="kpi"><small>Anticipo</small><b class="num">${money(m.anticipo)}</b></div><div class="kpi"><small>Consumo mínimo</small><b class="num">${money(m.minimo)}</b></div></div></div>`; }
-  function svgPlano(suc, piso, selId, interactivo) {
-    const mesas = CC.db.mesas.filter(m => m.suc === suc && m.piso === piso);
-    const f = (v) => (v * 3.6).toFixed(1); // 100 -> 360 unidades
-    let out = `<svg viewBox="0 0 360 330" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="360" height="330" rx="14" fill="#F6EFE4"/>
-      <rect x="90" y="6" width="180" height="28" rx="8" fill="#320707"/><text x="180" y="24" text-anchor="middle" font-size="11" font-weight="700" fill="#F6EFE4" font-family="Montserrat, sans-serif">${piso === 1 ? 'BARRA Y ESCENARIO' : 'BALCÓN · SALONES'}</text>
-      ${piso === 1 ? '<rect x="120" y="96" width="120" height="50" rx="12" fill="#EFE3D6"/><text x="180" y="125" text-anchor="middle" font-size="10" fill="#A88C82" font-family="Montserrat, sans-serif">PISTA · CORO</text>' : ''}
-      <rect x="10" y="8" width="60" height="22" rx="6" fill="#EFE3D6"/><text x="40" y="23" text-anchor="middle" font-size="9" fill="#A88C82" font-family="Montserrat, sans-serif">ENTRADA</text>`;
-    mesas.forEach(m => {
-      const est = estadoMesa(m); const sel = m.id === selId;
-      const fill = sel ? '#C25B32' : est === 'ocupada' ? '#320707' : est === 'apartada' ? '#F3C8B4' : '#FFFDF9';
-      const stroke = sel ? '#C25B32' : m.tipo === 'vip' ? '#C99A2E' : '#C25B32';
-      const txt = sel || est === 'ocupada' ? '#F6EFE4' : '#320707';
-      const x = f(m.x) - f(m.w) / 2, y = f(m.y) - f(m.h) / 2 + 20, w = f(m.w), hh = f(m.h);
-      out += `<g ${interactivo ? `data-mesa="${m.id}" style="cursor:pointer"` : ''}><rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="${m.salon ? 8 : 16}" fill="${fill}" stroke="${stroke}" stroke-width="${m.tipo === 'vip' ? 2.5 : 1.5}"/><text x="${Number(x) + Number(w) / 2}" y="${Number(y) + Number(hh) / 2 + 4}" text-anchor="middle" font-size="${m.salon ? 10 : 11}" font-weight="800" fill="${txt}" font-family="Inter Tight, Montserrat, sans-serif">${m.salon ? m.salon.split(' ')[1] : m.num}</text></g>`;
-    });
-    return out + '</svg>';
-  }
   function confirmarReserva() {
     const s = CC.suc(R.suc); const mesa = R.mesaId ? CC.mesa(R.mesaId) : null; const u = user();
     const anticipo = mesa ? mesa.anticipo : (R.tipo === 'cover' ? CC.PRECIOS().cover * R.personas : CC.PRECIOS().barra * R.personas);

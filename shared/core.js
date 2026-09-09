@@ -3,7 +3,7 @@
    del mismo dispositivo (BroadcastChannel + evento storage). Todos los datos son ILUSTRATIVOS. */
 (function () {
   'use strict';
-  const KEY = 'cc_demo_v7';
+  const KEY = 'cc_demo_v8';
   const SECRET = 'canta-corazon-demo-2026'; // solo demo: en producción la firma vive en el servidor
   const CANAL = 'cc-demo';
 
@@ -30,7 +30,7 @@
   // ───────────────────────── catálogos ─────────────────────────
   const SUCURSALES = [
     { id: 's1', nombre: 'Polanco', ciudad: 'CDMX', aforo: 800, pisos: 2, factor: 1.0 },
-    { id: 's2', nombre: 'Sucursal 2', ciudad: 'CDMX', aforo: 520, pisos: 1, factor: 0.78 }
+    { id: 's2', nombre: 'Pedregal', ciudad: 'CDMX', aforo: 520, pisos: 1, factor: 0.78 }
   ];
   const TIPOS_QR = {
     barra: { nombre: 'Barra', color: '#3FA8A6', texto: '#130708', desc: 'Acceso general con consumo en barra' },
@@ -43,7 +43,7 @@
     socio: 'Socio', gerente: 'Gerente', hostess: 'Hostess', puerta: 'Puerta', barra: 'Barra', mesero: 'Mesero', caja: 'Caja', compras: 'Compras'
   };
 
-  // Plano: coordenadas en % del lienzo (0-100). Piso 1 y 2 de Polanco, piso 1 de Sucursal 2.
+  // Plano: coordenadas en % del lienzo (0-100). Piso 1 y 2 de Polanco, piso 1 de Pedregal.
   function planoPolanco() {
     const m = []; let n = 1;
     // piso 1: barra arriba, pista al centro, mesas alrededor
@@ -254,6 +254,63 @@
     return db;
   }
 
+
+  // ───────────────────────── plano del local (estilo plano arquitectónico oscuro) ─────────────────────────
+  function estadoMesa(m) {
+    const r = db.reservas.find(x => x.mesaId === m.id && x.fecha === hoy() && ['confirmada', 'sentada', 'pendiente'].includes(x.estado));
+    if (!r) return { estado: 'libre', r: null };
+    return { estado: r.estado === 'sentada' ? 'ocupada' : 'apartada', r };
+  }
+  const PLANO_COLORES = { libre: '#9BD35E', apartada: '#F28B2B', ocupada: '#4A8AE0', vip: '#F3F3F3', sel: '#C25B32' };
+  function planoSVG(sucId, opts = {}) {
+    const W = 360, FH = 300, GAP = 14; const s = db.sucursales.find(x => x.id === sucId); const pisos = s ? s.pisos : 1;
+    const orden = []; for (let p = pisos; p >= 1; p--) orden.push(p); // planta alta arriba
+    const HF = pisos * FH + (pisos - 1) * GAP; const H = HF + 30;
+    const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    let out = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:block;width:100%;height:auto;background:#0A0A0A;border-radius:14px">`;
+    const F = 'Montserrat, Avenir Next, sans-serif', FN = 'Inter Tight, Montserrat, sans-serif';
+    const persona = (x, y) => `<circle cx="${x}" cy="${y}" r="2.2" fill="#8A8A8A"/><path d="M${x - 3} ${y + 9} v-4a3 3 0 0 1 6 0v4z" fill="#8A8A8A"/>`;
+    const palma = (x, y, sc = 1) => { let d = ''; for (let i = 0; i < 7; i++) { const a = -Math.PI / 2 + (i - 3) * 0.42; const l = 14 * sc; d += `<path d="M${x} ${y} q ${Math.cos(a) * l * 0.4} ${Math.sin(a) * l * 0.4 - 4 * sc} ${Math.cos(a) * l} ${Math.sin(a) * l}" stroke="#3E8E5A" stroke-width="${1.6 * sc}" fill="none" stroke-linecap="round"/>`; } return `<g opacity="0.95">${d}<circle cx="${x}" cy="${y}" r="${2 * sc}" fill="#2F6B45"/></g>`; };
+    const libre = (mesas, x, y, w, h) => !mesas.some(m => { const cx = m.x * 3.6, cy = m.y * 3.0, rw = (m.w || 9) * 1.8 + 8, rh = (m.h || 9) * 1.5 + 8; return cx + rw > x && cx - rw < x + w && cy + rh > y && cy - rh < y + h; });
+    orden.forEach((piso, idx) => {
+      const oy = idx * (FH + GAP); const mesas = db.mesas.filter(m => m.suc === sucId && m.piso === piso);
+      out += `<g transform="translate(0,${oy})">`;
+      out += `<rect x="6" y="6" width="${W - 12}" height="${FH - 12}" rx="10" fill="#141414" stroke="#3A3A3A" stroke-width="3"/>`;
+      // muros interiores y áreas fijas
+      out += `<rect x="14" y="14" width="56" height="38" rx="3" fill="#1C1C1C" stroke="#333" stroke-width="1.5"/>${persona(32, 26)}${persona(52, 26)}<text x="42" y="47" text-anchor="middle" font-family="${F}" font-size="5.5" fill="#777" letter-spacing="1.5">BAÑOS</text>`;
+      if (piso === 1) {
+        out += `<rect x="118" y="12" width="124" height="34" rx="4" fill="#1E1E1E" stroke="#4A4A4A" stroke-width="1.5"/><text x="180" y="34" text-anchor="middle" font-family="${F}" font-size="13" font-style="italic" font-weight="700" fill="#F2F2F2" letter-spacing="3">BAR</text><path d="M126 22 q6 -4 12 0 M222 22 q6 -4 12 0" stroke="#888" stroke-width="1.2" fill="none"/>`;
+        out += `<rect x="126" y="84" width="108" height="46" rx="6" fill="#171717" stroke="#3A3A3A" stroke-width="1.2" stroke-dasharray="4 3"/><text x="180" y="110" text-anchor="middle" font-family="${F}" font-size="7" fill="#8A8A8A" letter-spacing="2">PISTA · CORO</text>`;
+      } else {
+        out += `<rect x="252" y="14" width="90" height="32" rx="4" fill="#1E1E1E" stroke="#4A4A4A" stroke-width="1.5"/><text x="297" y="35" text-anchor="middle" font-family="${F}" font-size="12" font-style="italic" font-weight="700" fill="#F2F2F2" letter-spacing="3">BAR</text>`;
+        out += `<rect x="150" y="12" width="60" height="26" rx="3" fill="#1C1C1C" stroke="#333" stroke-width="1.2"/><path d="M156 32 h10 v-5 h10 v-5 h10 v-5 h10 v-5 h10" stroke="#777" stroke-width="1.2" fill="none"/><text x="180" y="45" text-anchor="middle" font-family="${F}" font-size="5.5" fill="#777" letter-spacing="1.5">ESCALERA</text>`;
+      }
+      // entrada: primer lugar libre
+      const candE = piso === 1 ? [[14, 262], [300, 262], [262, 16], [80, 262], [150, 264]] : [[14, 262], [300, 262], [80, 14], [228, 262], [150, 264]];
+      const e = candE.find(([x, y]) => libre(mesas, x - 6, y - 6, 60, 36)) || candE[2];
+      out += `<rect x="${e[0]}" y="${e[1]}" width="48" height="24" rx="3" fill="#1F1F1F" stroke="#4A4A4A" stroke-width="1.5"/><text x="${e[0] + 24}" y="${e[1] + 15}" text-anchor="middle" font-family="${F}" font-size="6" fill="#F2F2F2" letter-spacing="1.5">${piso === 1 ? 'ENTRADA' : 'ACCESO'}</text>`;
+      // plantas en los huecos
+      [[344, 62], [98, 272], [22, 190], [200, 60], [70, 100], [330, 150], [262, 272]].filter(([x, y]) => libre(mesas, x - 14, y - 14, 28, 28) && !(x > e[0] - 20 && x < e[0] + 70 && y > e[1] - 20 && y < e[1] + 44)).slice(0, 3).forEach(([x, y]) => { out += palma(x, y, 1); });
+      // etiqueta de planta
+      const lbl = pisos > 1 ? (piso === 2 ? 'planta alta · balcón y salones' : 'planta baja · bar y escenario') : (s.nombre + ' · bar y escenario');
+      out += `<text x="${W - 14}" y="${FH - 16}" text-anchor="end" font-family="${F}" font-size="7.5" font-style="italic" fill="#BDBDBD">${esc(lbl)}</text>`;
+      // mesas
+      mesas.forEach(m => {
+        const { estado, r } = estadoMesa(m); const sel = opts.selId === m.id;
+        const fill = sel ? PLANO_COLORES.sel : estado === 'ocupada' ? PLANO_COLORES.ocupada : estado === 'apartada' ? PLANO_COLORES.apartada : (m.tipo === 'vip' ? PLANO_COLORES.vip : PLANO_COLORES.libre);
+        const txt = (sel || estado === 'ocupada') ? '#FFFFFF' : '#111111';
+        const stroke = sel ? '#FFFFFF' : m.tipo === 'vip' ? '#C99A2E' : 'rgba(0,0,0,0)';
+        const cx = m.x * 3.6, cy = m.y * 3.0; const attrs = opts.interactivo ? ` data-mesa="${m.id}" style="cursor:pointer"` : '';
+        if (m.salon) { const w = m.w * 3.6, h = m.h * 3.0; out += `<g${attrs}><rect x="${cx - w / 2}" y="${cy - h / 2}" width="${w}" height="${h}" rx="6" fill="${fill}" stroke="${stroke}" stroke-width="2"/><text x="${cx}" y="${cy - 2}" text-anchor="middle" font-family="${FN}" font-size="11" font-weight="800" fill="${txt}">${m.num}</text><text x="${cx}" y="${cy + 9}" text-anchor="middle" font-family="${F}" font-size="5.5" fill="${txt}" letter-spacing=".5">${esc(m.salon.replace(/^Sal[oó]n /i, '').toUpperCase())}</text></g>`; }
+        else { const rr = m.tipo === 'vip' ? 17 : 15; out += `<g${attrs}><circle cx="${cx}" cy="${cy}" r="${rr}" fill="${fill}" stroke="${stroke}" stroke-width="2"/><text x="${cx}" y="${cy + (opts.nombres && r ? 1 : 4)}" text-anchor="middle" font-family="${FN}" font-size="11" font-weight="800" fill="${txt}">${m.num}</text>${opts.nombres && r ? `<text x="${cx}" y="${cy + 10}" text-anchor="middle" font-family="${F}" font-size="5.2" fill="${txt}">${esc(r.nombre.split(' ')[0])}</text>` : ''}</g>`; }
+      });
+      out += '</g>';
+    });
+    out += `<image xlink:href="../shared/img/logo_dark.png" href="../shared/img/logo_dark.png" x="${W / 2 - 52}" y="${HF + 7}" width="104" height="20"/>`;
+    return out + '</svg>';
+  }
+  const PLANO_LEYENDA = [['libre', 'Libre'], ['apartada', 'Apartada'], ['ocupada', 'Ocupada'], ['vip', 'VIP libre'], ['sel', 'Tu selección']];
+
   // ───────────────────────── almacén ─────────────────────────
   let db = null;
   const subs = new Set();
@@ -365,7 +422,7 @@
     on(fn) { subs.add(fn); return () => subs.delete(fn); },
     uid, money, pct, hoy, ahoraHM, fechaISO, fechaLarga, iniciales, DIAS, MESES, MESES_L, round,
     SUCURSALES: () => db.sucursales, TIPOS_QR, ROLES, PRECIOS: () => db.config.precios, BASES,
-    tokenQR, verificarQR, M, asistente,
+    tokenQR, verificarQR, M, asistente, estadoMesa, planoSVG, PLANO_COLORES, PLANO_LEYENDA,
     suc: (id) => db.sucursales.find(s => s.id === id), mesa: (id) => db.mesas.find(m => m.id === id), prod: (id) => db.productos.find(p => p.id === id), cliente: (id) => db.clientes.find(c => c.id === id), emp: (id) => db.personal.find(e => e.id === id), prov: (id) => db.proveedores.find(p => p.id === id),
     // helpers de escritura usados por ambas apps
     crearReserva(datos) { const r = Object.assign({ id: uid('r'), fecha: hoy(), estado: 'confirmada', creado: new Date().toISOString(), grupo: [], preorden: [], pagado: 0 }, datos); db.reservas.push(r); log(datos.origen || 'app', 'Reserva ' + r.tipo + ' ' + r.nombre); persist(); return r; },

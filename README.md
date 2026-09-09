@@ -2,7 +2,7 @@
 
 Demo funcional (datos ilustrativos, pagos simulados) de las dos webapps del sistema integral propuesto para Canta Corazón:
 
-- `interno/` — App interna: tablero de socios, puerta con escáner QR, mesas y reservas, barra (pedidos en vivo), inventario y merma, compras con factura XML, caja y cortes, clientes, personal, asistente de IA y configuración.
+- `interno/` — App interna (menú: Tablero · Puerta · Local · Insumos · Caja · Más; botón atrás y logo a inicio): tablero de socios, puerta con escáner QR, mesas y reservas, pedidos (la barra en vivo: de meseros, de mesa y desde la app), inventario y merma, compras con factura XML, caja y cortes, clientes, personal, asistente de IA y configuración.
 - `cliente/` — App del cliente: reservar en el plano, botellas en preventa, dividir con amigos, pagar, QR, pedir a la mesa, canción con el mariachi, amigos, recompensas.
 - `shared/` — núcleo compartido (`core.js`), identidad, tipografías, librerías (qrcode, jsQR, Chart.js).
 

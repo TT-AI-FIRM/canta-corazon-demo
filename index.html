@@ -9,7 +9,9 @@
 <style>
   body { background: var(--paper); color: var(--ink); }
   .wrap { max-width: 920px; margin: 0 auto; padding: 40px 22px 60px 22px; }
-  .logo { height: 22px; display: block; margin-bottom: 26px; }
+  .logo { height: 44px; display: block; margin: 0 auto 30px auto; }
+  .hero { text-align: center; }
+  .hero .lead { margin-left: auto; margin-right: auto; }
   h1 { font-size: 34px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; margin: 0 0 10px 0; }
   h1 em { font-style: normal; color: var(--terra); }
   .lead { font-size: 16px; color: var(--muted); max-width: 640px; margin: 0 0 26px 0; }
@@ -31,20 +33,20 @@
   .qr img, .qr canvas { width: 96px; height: 96px; display: block; }
   .qr b { display: block; font-size: 14px; } .qr span { font-size: 12.5px; color: var(--muted); }
   .foot { margin-top: 26px; font-size: 12px; color: var(--dim); }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 28px; } }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 28px; } .logo { height: 36px; } }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <img class="logo" src="shared/img/logo_cream.png" alt="Canta Corazón">
+  <div class="hero"><img class="logo" src="shared/img/logo_cream.png" alt="Canta Corazón">
   <h1>Todo el saloon, <em>en una sola base de datos.</em></h1>
-  <p class="lead">Demo funcional del sistema integral para Canta Corazón: la app interna para operar y la app del cliente para reservar, pagar, entrar y pedir. Las dos comparten los mismos datos en este dispositivo. Datos ilustrativos; pagos y mensajes simulados.</p>
+  <p class="lead">Demo funcional del sistema integral para Canta Corazón: la app interna para operar y la app del cliente para reservar, pagar, entrar y pedir. Las dos comparten los mismos datos en este dispositivo. Datos ilustrativos; pagos y mensajes simulados.</p></div>
   <div class="grid">
     <div class="card dark">
       <div class="eyebrow">App interna</div>
       <h2>Operar el saloon</h2>
-      <p>Para socios, gerente, hostess, puerta, barra, caja y compras. Cada rol ve solo lo suyo.</p>
-      <ul><li>Tablero de socios: ventas, ocupación, merma, comparativo por sucursal, día, hora y temporada</li><li>Puerta: escáner de QR que distingue barra, cover, mesa, mesa VIP y cliente VIP</li><li>Mesas: plano vivo por piso, reservas, ficha del cliente, sentar y liberar</li><li>Barra: pedidos en vivo desde la app y de meseros; canciones en cola</li><li>Inventario y merma, compras con factura XML, caja y cortes, clientes, personal</li><li>Asistente de IA que responde con los números del sistema</li></ul>
+      <p>Para socios, gerente, hostess, puerta, pedidos, caja y compras. Cada rol ve solo lo suyo.</p>
+      <ul><li>Tablero de socios: ventas, ocupación, merma, comparativo por sucursal, día, hora y temporada</li><li>Puerta: escáner de QR que distingue barra, cover, mesa, mesa VIP y cliente VIP</li><li>Local: plano vivo de Polanco y Pedregal, reservas, ficha del cliente, sentar y liberar</li><li>Pedidos: de meseros, de mesa y desde la app; la barra los surte, el cliente paga al instante y divide con amigos</li><li>Insumos: inventario con barra de existencia, merma y compras con factura XML; caja y cortes, clientes, personal</li><li>Asistente de IA que responde con los números del sistema</li></ul>
       <a class="btn" href="interno/">Abrir app interna</a>
     </div>
     <div class="card">
@@ -59,7 +61,7 @@
   <div class="steps"><h3>Recorrido sugerido para la reunión</h3><ol>
     <li>En la app del cliente, reserva la mesa 14 del piso 1 con dos botellas y divide con dos amigos. Paga con Apple Pay.</li>
     <li>En la app interna, entra como Puerta y escanea el QR (o usa «Simular escaneo»). Registra la entrada: la mesa aparece ocupada en el plano de la hostess.</li>
-    <li>Desde la app del cliente pide dos tragos a la mesa; entra como Barra y márcalos entregados. La cuenta del cliente se actualiza sola.</li>
+    <li>Desde la app del cliente pide dos tragos a la mesa; entra como Pedidos y márcalos entregados. La cuenta del cliente se actualiza sola.</li>
     <li>Entra como Socio: el tablero ya trae la venta, la ocupación y las alertas de la noche. Pregúntale al asistente qué sucursal vendió más.</li>
     <li>Como Compras, importa la factura XML de ejemplo: el inventario sube solo.</li></ol></div>
   <p class="foot">Presentan Carlos Martínez y Michel Tron · Septiembre 2026 · Demo con datos ilustrativos.</p>
