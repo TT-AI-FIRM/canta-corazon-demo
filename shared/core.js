@@ -3,7 +3,7 @@
    del mismo dispositivo (BroadcastChannel + evento storage). Todos los datos son ILUSTRATIVOS. */
 (function () {
   'use strict';
-  const KEY = 'cc_demo_v2';
+  const KEY = 'cc_demo_v6';
   const SECRET = 'canta-corazon-demo-2026'; // solo demo: en producción la firma vive en el servidor
   const CANAL = 'cc-demo';
 
@@ -163,7 +163,7 @@
         const base = p.cat === 'botella' ? 18 : p.cat === 'cerveza' ? 240 : p.cat === 'comida' ? 40 : 30;
         db.inventario[s.id][p.id] = { existencia: round(base * s.factor * between(0.6, 1.4)), minimo: round(base * 0.35), abiertas: p.cat === 'botella' ? Math.floor(rnd() * 3) : 0 };
       });
-      db.inventario[s.id]['b_aperol'].existencia = 5; // para la alerta
+      db.inventario[s.id]['b_aperol'].existencia = 9; // para la alerta
     });
 
     // facturas de proveedor (últimos 60 días)
@@ -184,16 +184,16 @@
     const hoyD = new Date(); hoyD.setHours(0, 0, 0, 0);
     const wk = { 0: 0.30, 1: 0.08, 2: 0.14, 3: 0.36, 4: 0.70, 5: 0.95, 6: 1.0 };
     const mes = { 0: 0.80, 1: 1.10, 2: 0.95, 3: 0.92, 4: 1.00, 5: 0.90, 6: 0.88, 7: 0.95, 8: 1.05, 9: 0.98, 10: 1.12, 11: 1.32 };
-    for (let i = 120; i >= 1; i--) {
+    for (let i = 365; i >= 1; i--) {
       const d = new Date(hoyD); d.setDate(d.getDate() - i);
       db.sucursales.forEach(s => {
         const f = wk[d.getDay()] * mes[d.getMonth()] * s.factor * between(0.88, 1.12);
-        const personas = round(s.aforo * 0.92 * f);
+        const personas = round(s.aforo * 0.74 * f);
         const cover = round(personas * 0.55 * PRECIOS.cover);
         const mesasOc = Math.min(db.mesas.filter(m => m.suc === s.id).length, round(db.mesas.filter(m => m.suc === s.id).length * Math.min(1, f * 1.05)));
-        const ventaMesas = round(mesasOc * between(7800, 11500));
-        const ventaBarra = round(personas * between(240, 330));
-        const ventaCocina = round(personas * between(110, 170));
+        const ventaMesas = round(mesasOc * between(4600, 6400));
+        const ventaBarra = round(personas * between(150, 205));
+        const ventaCocina = round(personas * between(60, 95));
         const merma = round(between(1.1, 2.6) + (s.id === 's2' && d.getDay() === 6 ? 0.9 : 0), 1);
         db.ventasHist.push({ fecha: fechaISO(d), dow: d.getDay(), mes: d.getMonth(), suc: s.id, personas, cover, ventaMesas, ventaBarra, ventaCocina, total: cover + ventaMesas + ventaBarra + ventaCocina, mesasOc, merma, costoBarra: round(between(22, 27), 1) });
       });
@@ -212,7 +212,7 @@
     // resto de la noche
     const nombresRes = db.clientes.slice(6);
     const ocupar = (lista, sucId, cuantasSentadas, cuantasConf, cuantasNo) => {
-      let idx = 0; const libres = lista.filter(m => m.id !== 'm14');
+      let idx = 0; const libres = lista.filter(m => m.id !== 'm14').filter((m, i) => i % 3 !== 1); // deja mesas libres en cada piso
       const estados = [].concat(Array(cuantasSentadas).fill('sentada'), Array(cuantasConf).fill('confirmada'), Array(cuantasNo).fill('noshow'));
       estados.forEach((est, k) => {
         const m = libres[k]; if (!m) return; const c = nombresRes[idx++ % nombresRes.length];
@@ -225,15 +225,15 @@
     ocupar(mesasS1, 's1', 12, 5, 2);
     ocupar(mesasS2, 's2', 8, 3, 1);
     // covers y barra (accesos sin mesa)
-    const nCov = { s1: 214, s2: 121 };
-    db.sucursales.forEach(s => { for (let i = 0; i < nCov[s.id]; i++) { const c = pick(db.clientes); const tipo = rnd() < 0.72 ? 'cover' : (rnd() < 0.7 ? 'barra' : 'clientevip'); db.accesos.push({ id: uid('a'), suc: s.id, fecha: H, hora: (19 + Math.floor(rnd() * 5)) % 24 + ':' + pad(Math.floor(rnd() * 60)), tipo, nombre: c.nombre, personas: 1, resultado: rnd() < 0.985 ? 'ok' : 'usado', puerta: 'Escáner ' + (1 + Math.floor(rnd() * 2)) }); if (tipo !== 'clientevip') db.pagos.push({ id: uid('pg'), suc: s.id, fecha: H, hora: '21:00', clienteId: c.id, concepto: tipo === 'cover' ? 'Cover' : 'Acceso barra', monto: tipo === 'cover' ? PRECIOS.cover : PRECIOS.barra, metodo: pick(['tarjeta', 'applepay', 'efectivo', 'spei']), estado: 'aprobado', propina: 0 }); } });
+    const nCov = { s1: 470, s2: 250 };
+    db.sucursales.forEach(s => { for (let i = 0; i < nCov[s.id]; i++) { const c = pick(db.clientes.slice(6)); const tipo = rnd() < 0.72 ? 'cover' : (rnd() < 0.7 ? 'barra' : 'clientevip'); db.accesos.push({ id: uid('a'), suc: s.id, fecha: H, hora: (19 + Math.floor(rnd() * 5)) % 24 + ':' + pad(Math.floor(rnd() * 60)), tipo, nombre: c.nombre, personas: 1, resultado: rnd() < 0.985 ? 'ok' : 'usado', puerta: 'Escáner ' + (1 + Math.floor(rnd() * 2)) }); if (tipo !== 'clientevip') db.pagos.push({ id: uid('pg'), suc: s.id, fecha: H, hora: '21:00', clienteId: c.id, concepto: tipo === 'cover' ? 'Cover' : 'Acceso barra', monto: tipo === 'cover' ? PRECIOS.cover : PRECIOS.barra, metodo: pick(['tarjeta', 'applepay', 'efectivo', 'spei']), estado: 'aprobado', propina: 0 }); } });
     // pedidos de las mesas sentadas
     const meserosPor = { s1: db.personal.filter(e => e.suc === 's1' && e.rol === 'mesero'), s2: db.personal.filter(e => e.suc === 's2' && e.rol === 'mesero') };
     db.reservas.filter(r => r.estado === 'sentada').forEach(r => {
-      const n = 2 + Math.floor(rnd() * 4);
+      const n = 4 + Math.floor(rnd() * 4);
       for (let k = 0; k < n; k++) {
         const items = []; const nI = 1 + Math.floor(rnd() * 3);
-        for (let j = 0; j < nI; j++) { const p = pick(db.productos.filter(p => p.cat !== 'extra' || p.id === 'x_sombrero')); items.push({ prodId: p.id, cant: p.cat === 'botella' ? 1 : 1 + Math.floor(rnd() * 3), precio: p.precio, porClienteId: r.clienteId }); }
+        for (let j = 0; j < nI; j++) { const p = rnd() < 0.35 ? pick(db.productos.filter(p => p.cat === 'botella')) : pick(db.productos.filter(p => p.cat !== 'extra' && p.cat !== 'botella')); items.push({ prodId: p.id, cant: p.cat === 'botella' ? 1 : 1 + Math.floor(rnd() * 3), precio: p.precio, porClienteId: r.clienteId }); }
         const estado = k < n - 1 ? 'entregado' : pick(['entregado', 'preparando', 'nuevo']);
         db.pedidos.push({ id: uid('o'), suc: r.suc, mesaId: r.mesaId, reservaId: r.id, items, estado, origen: rnd() < 0.5 ? 'app' : 'mesero', meseroId: pick(meserosPor[r.suc]).id, hora: (21 + Math.floor(rnd() * 3)) + ':' + pad(Math.floor(rnd() * 60)), creado: Date.now() - Math.floor(rnd() * 3.6e6) });
       }
@@ -246,7 +246,7 @@
     // conteo de cierre de ayer (para la merma)
     const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
     db.sucursales.forEach(s => {
-      const items = db.productos.filter(p => p.cat === 'botella').map(p => { const teo = round(between(6, 16), 1); const dif = p.id === 'b_aperol' && s.id === 's2' ? -0.9 : round(between(-0.45, 0.05), 1); return { prodId: p.id, teorico: teo, fisico: round(teo + dif, 1) }; });
+      const items = db.productos.filter(p => p.cat === 'botella').map(p => { const teo = round(between(6, 16), 1); const dif = p.id === 'b_aperol' && s.id === 's2' ? -0.9 : round(between(-0.7, 0.1), 1); return { prodId: p.id, teorico: teo, fisico: round(teo + dif, 1) }; });
       db.mermas.push({ id: uid('mm'), suc: s.id, fecha: fechaISO(ayer), turno: 'Noche', items, responsable: db.personal.find(e => e.suc === s.id && e.rol === 'barra').id });
     });
     db.bitacora.push({ t: Date.now(), quien: 'sistema', que: 'Datos de demostración generados' });
@@ -309,7 +309,7 @@
     const sentadas = res.filter(r => r.estado === 'sentada').length;
     const confirmadas = res.filter(r => r.estado === 'confirmada').length;
     const noshow = res.filter(r => r.estado === 'noshow').length;
-    const aforo = db.sucursales.filter(sucFilter(suc)).reduce((a, s) => a + s.aforo, 0);
+    const aforo = db.sucursales.filter(s => !suc || suc === 'all' || s.id === suc).reduce((a, s) => a + s.aforo, 0);
     const costo = ped.filter(p => p.estado !== 'cancelado').reduce((a, p) => a + p.items.reduce((b, i) => { const pr = db.productos.find(x => x.id === i.prodId); return b + (pr ? pr.costo * i.cant : 0); }, 0), 0);
     const ventaBarra = ped.filter(p => p.estado !== 'cancelado').reduce((a, p) => a + p.items.reduce((b, i) => { const pr = db.productos.find(x => x.id === i.prodId); return b + (pr && (pr.cat === 'botella' || pr.cat === 'trago' || pr.cat === 'cerveza') ? i.precio * i.cant : 0); }, 0), 0);
     const total = ventaMesas + cover;
@@ -322,7 +322,8 @@
   M.porMes = function (suc) { const out = MESES.map((m, i) => ({ mes: m, i, total: 0 })); db.ventasHist.filter(sucFilter(suc)).forEach(v => { out[v.mes].total += v.total; }); return out; };
   M.porHora = function (suc) { const n = M.noche(suc); return db.perfilHora.map(([h, f]) => ({ hora: h, venta: Math.round(n.total * f), programado: Math.round(n.total * f * between(0.92, 1.08)) })); };
   M.topProductos = function (suc, n = 6) { const acc = {}; db.pedidos.filter(sucFilter(suc)).filter(p => p.estado !== 'cancelado').forEach(p => p.items.forEach(i => { acc[i.prodId] = acc[i.prodId] || { prodId: i.prodId, cant: 0, venta: 0 }; acc[i.prodId].cant += i.cant; acc[i.prodId].venta += i.cant * i.precio; })); return Object.values(acc).map(x => ({ ...x, nombre: (db.productos.find(p => p.id === x.prodId) || {}).nombre })).sort((a, b) => b.venta - a.venta).slice(0, n); };
-  M.comparativo = function () { return db.sucursales.map(s => { const n = M.noche(s.id); const h = M.hist(s.id, 7); const prev = h.length ? h[h.length - 1].total : 0; return { suc: s, hoy: n.total, prev, delta: prev ? (n.total - prev) / prev * 100 : 0, personas: n.personas, mesasPct: n.mesasPct }; }); };
+  M.ultimoSabado = function (sucId) { const h = db.ventasHist.filter(v => v.suc === sucId && v.dow === 6); return h.length ? h[h.length - 1] : null; };
+  M.comparativo = function () { return db.sucursales.map(s => { const n = M.noche(s.id); const sab = M.ultimoSabado(s.id); const prev = sab ? sab.total : 0; return { suc: s, hoy: n.total, prev, delta: prev ? (n.total - prev) / prev * 100 : 0, personas: n.personas, mesasPct: n.mesasPct }; }); };
   M.mejorDia = function (suc) { const d = M.porDiaSemana(suc, 90).slice().sort((a, b) => b.prom - a.prom); return d[0]; };
   M.mejorMes = function (suc) { const m = M.porMes(suc).slice().sort((a, b) => b.total - a.total); return m[0]; };
   M.mermaUltima = function (suc) { const ms = db.mermas.filter(sucFilter(suc)); if (!ms.length) return { pct: 0, items: [] }; const items = []; let teo = 0, dif = 0; ms.forEach(m => m.items.forEach(i => { teo += i.teorico; dif += (i.teorico - i.fisico); items.push({ ...i, suc: m.suc, dif: round(i.fisico - i.teorico, 1), nombre: (db.productos.find(p => p.id === i.prodId) || {}).nombre }); })); return { pct: teo ? dif / teo * 100 : 0, items: items.sort((a, b) => a.dif - b.dif) }; };

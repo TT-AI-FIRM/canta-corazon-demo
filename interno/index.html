@@ -192,7 +192,7 @@
     if (!alertas.length) alertas.push(['ok', 'Sin alertas. Cortesías dentro del tope.']);
     const prev = comp.reduce((a, c) => a + c.prev, 0); const deltaAll = prev ? (n.total - prev) / prev * 100 : 0;
     const html = `<div class="kgrid">
-      <div class="k"><small>Venta de la noche</small><b>${money(n.total)}</b><span class="d ${deltaAll >= 0 ? 'up' : 'dn'}">${deltaAll >= 0 ? '▲' : '▼'} ${Math.abs(deltaAll).toFixed(1)}%</span><span class="s">contra el mismo día de la semana pasada</span></div>
+      <div class="k"><small>Venta de la noche</small><b>${money(n.total)}</b><span class="d ${deltaAll >= 0 ? 'up' : 'dn'}">${deltaAll >= 0 ? '▲' : '▼'} ${Math.abs(deltaAll).toFixed(1)}%</span><span class="s">contra el último sábado</span></div>
       <div class="k"><small>Personas</small><b>${n.personas.toLocaleString('es-MX')}</b><span class="s">${pct(n.ocupPct, 0)} del aforo · cover ${money(n.cover)}</span></div>
       <div class="k"><small>Ocupación de mesas</small><b class="good">${pct(n.mesasPct, 0)}</b><span class="s">${n.sentadas} sentadas · ${n.confirmadas} por llegar · ${n.noshow} no llegaron</span></div>
       <div class="k"><small>Ticket promedio</small><b>${money(n.ticket)}</b><span class="s">por persona · sin propina</span></div>
@@ -201,7 +201,7 @@
     </div>
     <div class="grid g32">
       <div class="card"><h3>Venta por hora <span>· esta noche, programado contra real</span></h3><canvas id="chHoras" height="120"></canvas></div>
-      <div class="card"><h3>Por sucursal <span>· esta noche contra el sábado anterior</span></h3>${comp.map(c => `<div class="hrow"><span class="nm">${esc(c.suc.nombre)}</span><div class="bar"><i style="width:${Math.min(100, c.hoy / Math.max(1, Math.max(...comp.map(x => Math.max(x.hoy, x.prev)))) * 100)}%"></i></div><span class="vl">${money(c.hoy)}</span></div><div class="hrow" style="margin-top:-2px;"><span class="nm"></span><div class="bar"><i class="two" style="width:${Math.min(100, c.prev / Math.max(1, Math.max(...comp.map(x => Math.max(x.hoy, x.prev)))) * 100)}%"></i></div><span class="vl muted">${money(c.prev)}</span></div>`).join('')}<div class="leyenda"><span><i style="background:var(--terra)"></i>Hoy</span><span><i style="background:#E9A98F"></i>Semana pasada</span></div>
+      <div class="card"><h3>Por sucursal <span>· esta noche contra el último sábado</span></h3>${comp.map(c => `<div class="hrow"><span class="nm">${esc(c.suc.nombre)}</span><div class="bar"><i style="width:${Math.min(100, c.hoy / Math.max(1, Math.max(...comp.map(x => Math.max(x.hoy, x.prev)))) * 100)}%"></i></div><span class="vl">${money(c.hoy)}</span></div><div class="hrow" style="margin-top:-2px;"><span class="nm"></span><div class="bar"><i class="two" style="width:${Math.min(100, c.prev / Math.max(1, Math.max(...comp.map(x => Math.max(x.hoy, x.prev)))) * 100)}%"></i></div><span class="vl muted">${money(c.prev)}</span></div>`).join('')}<div class="leyenda"><span><i style="background:var(--terra)"></i>Hoy</span><span><i style="background:#E9A98F"></i>Último sábado</span></div>
         <h3 style="margin-top:14px;">Alertas de la noche</h3>${alertas.map(([t, m]) => `<div class="alert"><i style="background:${t === 'bad' ? '#FB7185' : t === 'warn' ? '#F1C453' : '#7ED3A0'}"></i><span>${m}</span></div>`).join('')}</div>
     </div>
     <div class="grid g3">
