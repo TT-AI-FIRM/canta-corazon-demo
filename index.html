@@ -2,71 +2,372 @@
 <html lang="es-MX">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Canta Corazón · Demo del sistema</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Canta Corazón · Propuesta de sistema integral</title>
+<meta name="description" content="Propuesta para Canta Corazón: una sola base de datos con dos apps. La app interna para puerta, hostess, barra, caja, compras y socios; y la app del cliente, donde reserva su mesa, paga, entra con su QR, pide y acumula recompensas. Con demos funcionales.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="T.T AI Firm">
+<meta property="og:title" content="Canta Corazón · Propuesta de sistema integral">
+<meta property="og:description" content="Un sistema propio para Canta Corazón: el cliente reserva y paga solo, entra con su QR, la puerta y las mesas se ven en vivo y los socios tienen sus números y un asistente de IA. Demo funcional, listo para probarse en el teléfono.">
+<meta property="og:url" content="https://tt-ai-firm.github.io/canta-corazon-demo/">
+<meta property="og:image" content="https://tt-ai-firm.github.io/canta-corazon-demo/shared/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_MX">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="shared/img/fav.svg">
-<link rel="stylesheet" href="shared/brand.css">
+<script type="importmap">{ "imports": { "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.18/+esm" } }</script>
 <style>
-  body { background: var(--paper); color: var(--ink); }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 40px 22px 60px 22px; }
-  .logo { height: 44px; display: block; margin: 0 auto 30px auto; }
-  .hero { text-align: center; }
-  .hero .lead { margin-left: auto; margin-right: auto; }
-  h1 { font-size: 34px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; margin: 0 0 10px 0; }
-  h1 em { font-style: normal; color: var(--terra); }
-  .lead { font-size: 16px; color: var(--muted); max-width: 640px; margin: 0 0 26px 0; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .card { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; }
-  .card.dark { background: var(--dark); color: var(--darktext); border: 0; }
-  .card .eyebrow { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--terra); font-weight: 700; margin-bottom: 8px; }
-  .card h2 { margin: 0 0 8px 0; font-size: 22px; letter-spacing: -.01em; }
-  .card p { margin: 0 0 14px 0; font-size: 14px; color: var(--muted); }
-  .card.dark p { color: var(--darkmuted); }
-  .card ul { margin: 0 0 16px 0; padding: 0 0 0 16px; font-size: 13.5px; color: var(--muted); line-height: 1.6; }
-  .card.dark ul { color: #E9CFC6; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; padding: 13px 16px; font-weight: 700; font-size: 14.5px; background: var(--terra); color: var(--paper); text-decoration: none; margin-top: auto; }
-  .btn.sec { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
-  .steps { background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 22px; margin-top: 16px; }
-  .steps h3 { margin: 0 0 10px 0; font-size: 15px; }
-  .steps ol { margin: 0; padding-left: 20px; font-size: 14px; color: var(--muted); line-height: 1.7; }
-  .qr { display: flex; gap: 16px; align-items: center; margin-top: 16px; background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 16px 22px; }
-  .qr img, .qr canvas { width: 96px; height: 96px; display: block; }
-  .qr b { display: block; font-size: 14px; } .qr span { font-size: 12.5px; color: var(--muted); }
-  .foot { margin-top: 26px; font-size: 12px; color: var(--dim); }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 28px; } .logo { height: 36px; } }
+  @font-face { font-family: "Montserrat"; src: url("shared/fonts/Montserrat.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Inter Tight"; src: url("shared/fonts/InterTight.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+  :root {
+    --page: #130708; --deep: #130708; --deep2: #1C0D0F; --terra: #C25B32; --terra-light: #F3C8B4; --terra-ink: #F6EFE4; --gold: #C99A2E;
+    --surface: #F6EFE4; --surface2: #EFE2D8; --card: #FFFDF9;
+    --ink: #320707; --ink-soft: #7A5A50; --ghost: #DBCFC5; --hairline: #E4D7CC; --on-dark: #F6EFE4;
+    --radius-card: 1.5rem; --radius-card-lg: 2rem; --radius-pill: 62.5rem; --radius-xl: .75rem;
+    --ease-out-expo: cubic-bezier(.16, 1, .3, 1); --ease-out-quart: cubic-bezier(.25, 1, .5, 1); --ease-in-out-cubic: cubic-bezier(.65, 0, .35, 1);
+  }
+  html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+  @media (max-width: 1920px) { html { font-size: 0.833333vw; } }
+  @media (max-width: 1440px) { html { font-size: 1.111111vw; } }
+  @media (max-width: 1024px) { html { font-size: 1.5625vw; } }
+  @media (max-width: 640px)  { html { font-size: 4.444444vw; } }
+  html.locked { position: relative; overflow: hidden; height: 100%; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  [hidden] { display: none !important; }
+  img { display: block; max-width: 100%; }
+  button { cursor: pointer; font: inherit; color: inherit; background: none; border: 0; padding: 0; text-align: left; }
+  a { color: inherit; text-decoration: none; }
+  :focus-visible { outline: 2px solid var(--terra-light); outline-offset: 2px; }
+  body { min-height: 100vh; background: var(--page); color: var(--on-dark); font-family: "Montserrat", system-ui, -apple-system, sans-serif; font-weight: 400; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+  main { width: 100%; overflow-x: clip; padding: .5rem; }
+  @media (min-width: 640px) { main { padding: .75rem; } }
+  .num { font-family: "Inter Tight", "Montserrat", sans-serif; font-variant-numeric: tabular-nums; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* reveals */
+  .rv .w { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .12em; margin-bottom: -.12em; }
+  .rv .w > span { display: inline-block; transform: translateY(115%); opacity: 0; transition: transform var(--d, 1100ms) var(--ease-out-expo) var(--dl, 0ms), opacity var(--d, 1100ms) var(--ease-out-expo) var(--dl, 0ms); will-change: transform; }
+  .rv.in .w > span { transform: translateY(0); opacity: 1; }
+  .rv.fade .w { overflow: visible; padding-bottom: 0; margin-bottom: 0; } .rv.fade .w > span { transform: translateY(18px); transition-timing-function: var(--ease-out-quart); }
+  .lines .l { display: block; overflow: hidden; padding-bottom: .14em; margin-bottom: -.14em; }
+  .lines .l > span { display: block; transform: translateY(115%); opacity: 0; transition: transform 950ms var(--ease-out-expo) var(--dl, 0ms), opacity 950ms var(--ease-out-expo) var(--dl, 0ms); }
+  .lines.in .l > span { transform: none; opacity: 1; }
+  .iv { opacity: 0; transform: translateY(var(--y, 28px)) scale(var(--s, 1)); transition: transform 900ms cubic-bezier(.2, .9, .25, 1.03) var(--dl, 0ms), opacity 700ms ease var(--dl, 0ms); will-change: transform, opacity; }
+  .iv.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .rv .w > span, .lines .l > span, .iv { transition-duration: 1ms !important; } }
+  /* loader */
+  #loader { position: fixed; inset: 0; z-index: 200; background: var(--deep); color: var(--on-dark); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; transition: transform 850ms var(--ease-in-out-cubic); }
+  #loader.out { transform: translateY(-105%); }
+  #loader .mark { opacity: 0; transform: translateY(16px); transition: transform 700ms cubic-bezier(.2, .9, .25, 1.03), opacity 600ms ease; } #loader.ready .mark { opacity: 1; transform: none; } #loader .mark img { height: 2.2rem; }
+  #loader .track { width: 10rem; height: 1px; border-radius: var(--radius-pill); background: rgba(246,239,228,.2); overflow: hidden; }
+  #loader .fill { height: 100%; width: 100%; background: var(--terra); transform: scaleX(0); transform-origin: left; transition: transform 1280ms var(--ease-in-out-cubic) 120ms; } #loader.ready .fill { transform: scaleX(1); }
+  /* header */
+  header.site { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem 1.5rem 0; font-size: .75rem; color: var(--on-dark); position: relative; z-index: 5; }
+  @media (min-width: 640px) { header.site { padding: 2rem 2.5rem 0; } }
+  header.site nav.left { display: none; flex: 1; gap: 2rem; } header.site nav.left a { opacity: .9; } header.site nav.left a:hover { opacity: 1; } @media (min-width: 1024px) { header.site nav.left { display: flex; } }
+  header.site .right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; }
+  header.site .textbtn { display: none; text-transform: uppercase; letter-spacing: .12em; } header.site .textbtn:hover { text-decoration: underline; } @media (min-width: 640px) { header.site .textbtn { display: inline; } }
+  .burger { width: 2.5rem; height: 2.5rem; display: grid; place-items: center; border-radius: var(--radius-pill); background: rgba(246,239,228,.14); backdrop-filter: blur(8px); transition: background-color 200ms ease; } .burger:hover { background: rgba(246,239,228,.24); }
+  .burger i { display: block; width: 1rem; height: 1px; background: var(--on-dark); } .burger i + i { margin-top: 5px; }
+  /* hero */
+  .hero { position: relative; isolation: isolate; overflow: hidden; border-radius: var(--radius-card-lg); background: var(--deep); color: var(--on-dark); height: calc(100svh - 1rem); min-height: 36rem; display: flex; flex-direction: column; }
+  @media (min-width: 640px) { .hero { height: calc(100svh - 1.5rem); } }
+  .hero .plate { position: absolute; inset: 0; z-index: -10; overflow: hidden; background: radial-gradient(ellipse 70% 55% at 50% 52%, #431212 0%, #230A0B 45%, var(--deep) 100%); } .hero .plate .inner { position: absolute; inset: 0; display: grid; place-items: center; will-change: transform; } .hero .plate .biglogo { width: min(72vw, 50rem); height: auto; opacity: .92; filter: drop-shadow(0 1.5rem 3rem rgba(0,0,0,.6)); }
+  @media (max-width: 640px) { .hero .plate .biglogo { width: 86vw; } .hero .plate .inner { place-items: center; padding-bottom: 6rem; } }
+  .hero .title { padding: 1rem 1.5rem 0; } @media (min-width: 640px) { .hero .title { padding-left: 2.5rem; padding-right: 2.5rem; } }
+  .hero h1 { font-size: 10.4vw; font-weight: 600; text-transform: uppercase; line-height: .85; letter-spacing: -.04em; white-space: nowrap; }
+  .hero .bottom { margin-top: auto; padding: 0 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.5rem; } @media (min-width: 640px) { .hero .bottom { padding: 0 2.5rem 2.5rem; flex-direction: row; justify-content: space-between; align-items: flex-end; } }
+  .hero .tag { font-size: clamp(1.3rem, 2.6vw, 2.4rem); flex: 0 1 auto; min-width: 0; font-weight: 500; text-transform: uppercase; line-height: .95; letter-spacing: -.02em; color: rgba(246,239,228,.9); } .hero .tag .l > span { white-space: nowrap; }
+  .hero .cluster { display: flex; align-items: flex-end; gap: 1rem; }
+  .glass { border: 1px solid rgba(246,239,228,.15); background: rgba(246,239,228,.09); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 1.25rem 2.5rem rgba(0,0,0,.35); border-radius: var(--radius-card); padding: .75rem; }
+  .slider { display: none; width: 16rem; flex-direction: column; gap: .75rem; } @media (min-width: 768px) { .slider { display: flex; } }
+  .slider .sc { display: flex; gap: .75rem; align-items: center; transition: transform 240ms var(--ease-out-quart), opacity 240ms ease; } .slider .sc.swap { opacity: 0; transform: translateY(16px) scale(.96); }
+  .slider .sc img { width: 3.5rem; height: 3.5rem; border-radius: var(--radius-xl); object-fit: cover; object-position: top; flex: 0 0 3.5rem; }
+  .slider .sc b { display: block; font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; } .slider .sc span { display: block; font-size: .7rem; text-transform: uppercase; opacity: .8; margin-top: .15rem; } .slider .sc a { display: inline-block; font-size: .65rem; text-decoration: underline; margin-top: .35rem; }
+  .dots { display: flex; gap: .5rem; } .dots button { padding: .375rem; } .dots i { display: block; height: .375rem; width: .375rem; border-radius: var(--radius-pill); background: rgba(246,239,228,.4); transition: width 240ms var(--ease-out-quart), background-color 240ms ease; } .dots button[aria-current="true"] i { width: 1.25rem; background: var(--on-dark); }
+  .member { width: 100%; max-width: 20rem; display: flex; gap: .75rem; align-items: stretch; } @media (min-width: 640px) { .member { max-width: 15rem; } }
+  .member .col { display: flex; flex-direction: column; justify-content: space-between; flex: 1; } .member .big { font-size: 1.875rem; font-weight: 600; line-height: 1; }
+  .member .avs { display: flex; margin-top: .5rem; } .member .avs i { width: 1.25rem; height: 1.25rem; border-radius: var(--radius-pill); border: 1px solid rgba(19,7,8,.4); margin-left: -.5rem; } .member .avs i:first-child { margin-left: 0; }
+  .member .cap { font-size: .65rem; opacity: .85; margin-top: .5rem; line-height: 1.4; } .member img { width: 4rem; aspect-ratio: 3/4; object-fit: cover; border-radius: var(--radius-xl); }
+  /* propuesta */
+  .trust { position: relative; isolation: isolate; overflow: hidden; background: var(--surface); color: var(--ink); padding: 4rem 1.5rem; border-radius: var(--radius-card-lg); margin-top: .75rem; } @media (min-width: 640px) { .trust { padding: 5rem 2.5rem; } }
+  .trust .badges { position: relative; z-index: 20; display: flex; flex-direction: column; gap: 1.5rem; } @media (min-width: 640px) { .trust .badges { flex-direction: row; justify-content: space-between; align-items: flex-start; } }
+  .pct { width: 7rem; height: 7rem; border-radius: var(--radius-pill); background: var(--surface2); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex: 0 0 auto; } @media (min-width: 640px) { .pct { width: 8rem; height: 8rem; } }
+  .pct b { font-size: 1.5rem; font-weight: 600; } .pct span { font-size: .6rem; color: var(--ink-soft); max-width: 8em; line-height: 1.3; margin-top: .2rem; }
+  .bcard { max-width: 34rem; border-radius: var(--radius-card); background: var(--surface2); padding: 1.25rem; } @media (min-width: 640px) { .bcard { padding: 1.75rem; } } .bcard .eyebrow { margin-bottom: .75rem; }
+  .bcard h3 { font-size: 1.5rem; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; } .bcard p { font-size: .9rem; color: var(--ink-soft); line-height: 1.6; margin-top: .75rem; } .bcard p b { color: var(--ink); font-weight: 600; }
+  /* el sistema */
+  .programs { background: var(--surface2); color: var(--ink); padding: 6rem 1.5rem; border-radius: var(--radius-card-lg) var(--radius-card-lg) 0 0; margin-top: .75rem; } @media (min-width: 640px) { .programs { padding-left: 2.5rem; padding-right: 2.5rem; } }
+  .eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .22em; color: var(--ink-soft); } .eyebrow::before { content: ''; width: .375rem; height: .375rem; border-radius: var(--radius-pill); background: var(--terra); }
+  .eyebrow.light { color: rgba(246,239,228,.7); } .eyebrow.light::before { background: var(--terra-light); }
+  h2.big { font-size: 3rem; font-weight: 600; line-height: .95; letter-spacing: -.03em; margin-top: 1rem; }
+  .intro-p { font-size: 1rem; color: var(--ink-soft); max-width: 36rem; margin-top: 1.25rem; line-height: 1.6; } .intro-p b { color: var(--ink); font-weight: 600; }
+  .plist { list-style: none; padding: 0; margin-top: 3rem; } .plist li { border-top: 1px solid var(--hairline); } .plist li:last-child { border-bottom: 1px solid var(--hairline); } .plist a { display: block; } .plist a:focus-visible { background: var(--surface); }
+  .plist .row { display: flex; gap: 1.25rem; padding: 1.75rem 0; align-items: center; }
+  .plist .n { width: 2.5rem; font-size: .875rem; font-weight: 600; color: var(--ink-soft); flex: 0 0 2.5rem; } .plist .tx { flex: 1; min-width: 0; } .plist .tx b { display: block; font-size: 1.5rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; } @media (min-width: 640px) { .plist .tx b { font-size: 1.875rem; } } .plist .tx span { display: block; font-size: .875rem; color: var(--ink-soft); margin-top: .4rem; max-width: 42rem; line-height: 1.55; } .plist .tx small { display: inline-block; font-size: .7rem; text-transform: uppercase; letter-spacing: .14em; color: var(--terra-ink); background: var(--terra); border-radius: var(--radius-pill); padding: .2rem .6rem; margin-top: .6rem; }
+  .plist .ar { width: 2.75rem; height: 2.75rem; border-radius: var(--radius-pill); border: 1px solid var(--ghost); display: grid; place-items: center; flex: 0 0 2.75rem; opacity: .55; will-change: transform, opacity; } .plist .ar svg { width: 1.1rem; height: 1.1rem; }
+  /* pantallas */
+  .facil { background: var(--surface); color: var(--ink); border-radius: var(--radius-card-lg); margin-top: -2.5rem; position: relative; padding: 4rem 1.5rem 5rem; } @media (min-width: 640px) { .facil { padding-left: 2.5rem; padding-right: 2.5rem; } }
+  .facil .grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: end; } @media (min-width: 768px) { .facil .grid { grid-template-columns: 1fr 1fr; } }
+  .facil .intro { max-width: 24rem; } .facil .icon { width: 4rem; height: 4rem; border-radius: var(--radius-card); object-fit: cover; }
+  .facil .body { font-size: .95rem; color: var(--ink-soft); max-width: 22rem; margin-top: 1.5rem; line-height: 1.6; }
+  .courts { display: flex; align-items: flex-end; gap: 1.25rem; } .courts figure { flex: 1; position: relative; aspect-ratio: 3/4; border-radius: var(--radius-card); overflow: hidden; background: var(--surface2); } .courts figure.up { margin-bottom: 2rem; }
+  .courts img { width: 100%; height: 100%; object-fit: cover; object-position: top; will-change: transform; }
+  .courts figcaption { position: absolute; left: .75rem; right: .75rem; bottom: .75rem; border-radius: var(--radius-xl); backdrop-filter: blur(8px); color: #fff; padding: .75rem 1rem; } .courts .terra figcaption { background: rgba(140,58,28,.66); } .courts .dark figcaption { background: rgba(19,7,8,.6); }
+  .courts figcaption b { display: block; font-size: .875rem; font-weight: 600; } .courts figcaption span { display: block; font-size: .65rem; opacity: .9; margin-top: .15rem; line-height: 1.4; }
+  .wide { margin-top: 2.5rem; } .wide figure { position: relative; border-radius: var(--radius-card); overflow: hidden; background: var(--surface2); aspect-ratio: 16/9; } @media (min-width: 768px) { .wide figure { aspect-ratio: 21/9; } }
+  .wide img { width: 100%; height: 100%; object-fit: cover; object-position: top; will-change: transform; }
+  .wide figcaption { position: absolute; left: .75rem; bottom: .75rem; max-width: 24rem; border-radius: var(--radius-xl); backdrop-filter: blur(8px); background: rgba(19,7,8,.62); color: #fff; padding: .75rem 1rem; } .wide figcaption b { display: block; font-size: .875rem; font-weight: 600; } .wide figcaption span { display: block; font-size: .65rem; opacity: .9; margin-top: .15rem; line-height: 1.4; }
+  /* todo conectado */
+  .conectado { background: var(--deep2); color: var(--on-dark); border-radius: var(--radius-card-lg); margin-top: .75rem; padding: 5rem 1.5rem; } @media (min-width: 640px) { .conectado { padding-left: 2.5rem; padding-right: 2.5rem; } }
+  .conectado .lead { font-size: 1.05rem; color: rgba(246,239,228,.75); max-width: 40rem; margin-top: 1.5rem; line-height: 1.6; } .conectado .lead b { color: var(--on-dark); font-weight: 600; }
+  .conectado dl { display: grid; grid-template-columns: 1fr; column-gap: 2rem; row-gap: 2rem; margin-top: 3.5rem; } @media (min-width: 640px) { .conectado dl { grid-template-columns: 1fr 1fr; } } @media (min-width: 1024px) { .conectado dl { grid-template-columns: repeat(4, 1fr); } }
+  .conectado .cell { border-top: 1px solid rgba(246,239,228,.2); padding-top: 1.25rem; }
+  .conectado .qr { display: flex; align-items: center; gap: 1rem; margin-top: 1.25rem; } .conectado .qr > div { flex: 0 0 auto; background: #F6EFE4; padding: .5rem; border-radius: .75rem; line-height: 0; } .conectado .qr img, .conectado .qr canvas { display: block; width: 5.5rem; height: 5.5rem; } .conectado .qr span { font-size: .8rem; line-height: 1.45; color: rgba(246,239,228,.6); max-width: 14rem; } .conectado dt { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; color: var(--terra-light); } .conectado dd { margin: .75rem 0 0; font-size: 1.05rem; line-height: 1.5; }
+  /* lo que cambia */
+  .testi { background: var(--surface); color: var(--ink); border-radius: var(--radius-card-lg); margin-top: .75rem; padding: 5rem 1.5rem; } @media (min-width: 640px) { .testi { padding: 6rem 2.5rem; } }
+  .testi ul { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 3rem; } @media (min-width: 768px) { .testi ul { grid-template-columns: repeat(3, 1fr); } }
+  .tcard { display: flex; flex-direction: column; justify-content: space-between; height: 100%; border-radius: var(--radius-card); background: var(--surface2); padding: 1.75rem; will-change: transform; }
+  .tcard .q { font-size: .75rem; color: var(--terra-ink); background: var(--terra); display: inline-block; border-radius: var(--radius-pill); padding: .3rem .7rem; line-height: 1; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; } .tcard blockquote { font-size: 1.05rem; line-height: 1.55; margin-top: 1rem; color: var(--ink); }
+  .tcard figcaption { border-top: 1px solid var(--hairline); padding-top: 1rem; margin-top: 1.5rem; } .tcard figcaption b { display: block; font-weight: 600; } .tcard figcaption span { font-size: .875rem; color: var(--ink-soft); }
+  /* con quiénes hemos trabajado */
+  .work { background: var(--surface2); color: var(--ink); border-radius: var(--radius-card-lg); margin-top: .75rem; padding: 5rem 1.5rem; } @media (min-width: 640px) { .work { padding: 6rem 2.5rem; } }
+  .work .grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-top: 3rem; } @media (min-width: 768px) { .work .grid { grid-template-columns: 1.15fr 1fr; } }
+  .wcard { border-radius: var(--radius-card); background: var(--surface); padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; } .wcard.dark { background: var(--deep2); color: var(--on-dark); }
+  .wcard h3 { font-size: 1.35rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.15; } .wcard p { font-size: .9rem; line-height: 1.6; color: var(--ink-soft); } .wcard.dark p { color: rgba(246,239,228,.72); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: auto; } .stats div { border-top: 1px solid rgba(246,239,228,.2); padding-top: .9rem; } .stats b { display: block; font-size: 2rem; font-weight: 600; line-height: 1; letter-spacing: -.03em; } .stats span { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .12em; color: rgba(246,239,228,.6); margin-top: .4rem; line-height: 1.35; }
+  .logos { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: auto; } .logos span { display: inline-flex; align-items: center; border: 1px solid var(--ghost); border-radius: var(--radius-pill); padding: .6rem 1.1rem; font-size: .95rem; font-weight: 600; letter-spacing: -.01em; background: var(--card); }
+  /* footer */
+  footer.site { background: var(--deep2); color: var(--on-dark); border-radius: var(--radius-card-lg); margin-top: .75rem; padding: 3.5rem 1.5rem; } @media (min-width: 640px) { footer.site { padding: 4rem 2.5rem; } }
+  .cta { border-bottom: 1px solid rgba(246,239,228,.15); padding-bottom: 3.5rem; display: flex; flex-direction: column; gap: 2rem; } @media (min-width: 640px) { .cta { flex-direction: row; justify-content: space-between; align-items: flex-end; } }
+  .cta .h { font-size: 3.75rem; font-weight: 600; line-height: .92; letter-spacing: -.03em; margin-top: 1rem; }
+  .cta .apps { display: flex; flex-direction: column; gap: .75rem; width: 100%; } @media (min-width: 640px) { .cta .apps { width: 20rem; } }
+  .applink { display: flex; align-items: center; gap: .9rem; border-radius: var(--radius-card); border: 1px solid rgba(246,239,228,.15); background: rgba(246,239,228,.06); padding: .85rem 1rem; transition: background-color 200ms ease, border-color 200ms ease; } .applink:hover { background: rgba(246,239,228,.12); border-color: rgba(246,239,228,.3); }
+  .applink img { width: 3rem; height: 3rem; border-radius: var(--radius-xl); object-fit: cover; object-position: top; flex: 0 0 3rem; } .applink b { display: block; font-size: .95rem; font-weight: 600; } .applink span { display: block; font-size: .75rem; color: rgba(246,239,228,.65); margin-top: .15rem; } .applink svg { width: 1rem; height: 1rem; margin-left: auto; flex: 0 0 1rem; will-change: transform; }
+  .pill { display: inline-flex; align-items: center; gap: .5rem; border-radius: var(--radius-pill); padding: .875rem 1.75rem; font-size: .875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; transition: background-color 200ms ease, color 200ms ease; } .pill svg { width: 1rem; height: 1rem; will-change: transform; }
+  .pill.light { background: var(--surface); color: var(--ink); } .pill.light:hover { background: var(--terra); color: var(--terra-ink); } .pill.solid { background: var(--ink); color: #fff; } .pill.solid:hover { background: #4A1010; }
+  .cols { display: grid; gap: 2.5rem; padding: 3.5rem 0; grid-template-columns: 1fr; } @media (min-width: 768px) { .cols { grid-template-columns: 1.4fr 1fr 1fr; } } @media (min-width: 1024px) { .cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+  .cols .brandcol { max-width: 22rem; } .cols .brandcol img { height: 1.8rem; } .cols .brandcol p { font-size: .875rem; color: rgba(246,239,228,.65); margin-top: 1rem; line-height: 1.6; }
+  .cols address { font-style: normal; margin-top: 1.5rem; font-size: .875rem; color: rgba(246,239,228,.8); line-height: 1.8; } .cols address .mut { color: rgba(246,239,228,.55); }
+  .cols h4 { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; color: rgba(246,239,228,.5); } .cols ul, .cols ol { padding: 0; margin-top: 1rem; font-size: .875rem; color: rgba(246,239,228,.8); list-style: none; } .cols li + li { margin-top: .75rem; } .cols li a:hover { color: var(--terra-light); }
+  .cols ol { counter-reset: paso; } .cols ol li { display: flex; gap: .6rem; } .cols ol li::before { counter-increment: paso; content: counter(paso, decimal-leading-zero); font-family: "Inter Tight", sans-serif; color: var(--terra-light); flex: 0 0 1.6rem; }
+  .bottombar { border-top: 1px solid rgba(246,239,228,.15); padding-top: 2rem; font-size: .875rem; color: rgba(246,239,228,.6); display: flex; flex-direction: column; gap: 1.25rem; } @media (min-width: 640px) { .bottombar { flex-direction: row; justify-content: space-between; align-items: center; } } .bottombar nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  /* menú */
+  #menu { position: fixed; inset: 0; z-index: 70; display: flex; flex-direction: column; pointer-events: none; } #menu.open { pointer-events: auto; }
+  #menu .bg { position: absolute; inset: 0; background: var(--deep); opacity: 0; transition: opacity 320ms ease; } #menu.open .bg { opacity: 1; }
+  #menu .panel { position: relative; height: 100%; display: flex; flex-direction: column; padding: .5rem; color: var(--on-dark); opacity: 0; transform: translateY(-24px); transition: transform 420ms cubic-bezier(.2, .9, .25, 1.03), opacity 300ms ease; } @media (min-width: 640px) { #menu .panel { padding: .75rem; } } #menu.open .panel { opacity: 1; transform: none; }
+  #menu .inner { flex: 1; display: flex; flex-direction: column; padding: 1.5rem; } @media (min-width: 640px) { #menu .inner { padding: 2rem 2.5rem; } }
+  #menu .toprow { display: flex; justify-content: space-between; align-items: center; } #menu .toprow img { height: 1.6rem; }
+  .xbtn { width: 2.5rem; height: 2.5rem; border-radius: var(--radius-pill); display: grid; place-items: center; background: rgba(246,239,228,.14); transition: background-color 200ms ease; } .xbtn:hover { background: rgba(246,239,228,.24); } .xbtn svg { width: 1.1rem; height: 1.1rem; will-change: transform; }
+  #menu nav.main { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: .5rem; } #menu nav.main a { display: block; font-size: 2.6rem; font-weight: 600; letter-spacing: -.03em; line-height: 1; opacity: 0; transform: translateY(28px); transition: transform 600ms cubic-bezier(.2, .9, .25, 1.03) var(--dl), opacity 500ms ease var(--dl), color 200ms ease; } @media (min-width: 640px) { #menu nav.main a { font-size: 4.5rem; } } #menu.open nav.main a { opacity: 1; transform: none; } #menu nav.main a:hover { color: var(--terra-light); }
+  #menu .bottomrow { border-top: 1px solid rgba(246,239,228,.15); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem; } @media (min-width: 640px) { #menu .bottomrow { flex-direction: row; justify-content: space-between; align-items: center; } } #menu .bottomrow nav { display: flex; gap: 1.25rem; font-size: .875rem; color: rgba(246,239,228,.7); flex-wrap: wrap; } #menu .bottomrow nav a:hover { color: #fff; }
+  /* modal: elegir demo */
+  #modal { position: fixed; inset: 0; z-index: 90; display: flex; align-items: flex-end; justify-content: center; padding: .75rem; pointer-events: none; } @media (min-width: 640px) { #modal { align-items: center; padding: 1.5rem; } } #modal.open { pointer-events: auto; }
+  #modal .bg { position: absolute; inset: 0; background: rgba(19,7,8,.55); backdrop-filter: blur(6px); opacity: 0; transition: opacity 320ms ease; } #modal.open .bg { opacity: 1; }
+  #modal .panel { position: relative; width: 100%; max-height: 92svh; overflow-y: auto; border-radius: var(--radius-card-lg); background: var(--card); color: var(--ink); padding: 1.5rem; box-shadow: 0 2rem 4rem rgba(0,0,0,.5); opacity: 0; transform: translateY(28px) scale(.96); transition: transform 460ms cubic-bezier(.2, .9, .25, 1.03), opacity 320ms ease; } @media (min-width: 640px) { #modal .panel { max-width: 32rem; padding: 2rem; } } #modal.open .panel { opacity: 1; transform: none; }
+  #modal .panel .xbtn { background: var(--surface); color: var(--ink); flex: 0 0 auto; } #modal .panel .xbtn:hover { background: var(--hairline); }
+  #modal h2 { font-size: 2.25rem; font-weight: 600; line-height: .95; letter-spacing: -.03em; margin-top: .75rem; } @media (min-width: 640px) { #modal h2 { font-size: 3rem; } }
+  #modal .opts { display: flex; flex-direction: column; gap: .75rem; margin-top: 1.5rem; }
+  #modal .applink { border-color: var(--hairline); background: var(--surface); color: var(--ink); } #modal .applink:hover { background: var(--surface2); border-color: var(--ink); } #modal .applink span { color: var(--ink-soft); }
+  /* móvil: tamaños de texto */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 9.4vw; } .hero .tag { font-size: 1.3rem; } .hero .bottom { padding-bottom: 1.5rem; }
+    h2.big { font-size: 2.35rem; }
+    .cta .h { font-size: 2.8rem; } .conectado dd { font-size: 1rem; } .tcard blockquote { font-size: 1rem; } .stats b { font-size: 1.7rem; }
+    .plist .row { flex-wrap: wrap; gap: .5rem 1rem; padding: 1.5rem 0; } .plist .n { flex: 0 0 100%; width: auto; } .plist .tx { flex: 1 1 100%; } .plist .ar { display: none; }
+    .courts { gap: .75rem; } .courts figure.up { margin-bottom: 1rem; } .courts figcaption { left: .5rem; right: .5rem; bottom: .5rem; padding: .55rem .7rem; } .courts figcaption b { font-size: .78rem; } .courts figcaption span { display: none; } .wide figcaption { right: .75rem; max-width: none; }
+    .eyebrow { letter-spacing: .16em; }
+    .trust { padding: 3rem 1.25rem; } .programs { padding: 4rem 1.25rem; } .facil { padding: 3rem 1.25rem 4rem; } .conectado, .testi, .work { padding: 4rem 1.25rem; } footer.site { padding: 3rem 1.25rem; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="hero"><img class="logo" src="shared/img/logo_cream.png" alt="Canta Corazón">
-  <h1>Todo el saloon, <em>en una sola base de datos.</em></h1>
-  <p class="lead">Demo funcional del sistema integral para Canta Corazón: la app interna para operar y la app del cliente para reservar, pagar, entrar y pedir. Las dos comparten los mismos datos en este dispositivo. Datos ilustrativos; pagos y mensajes simulados.</p></div>
-  <div class="grid">
-    <div class="card dark">
-      <div class="eyebrow">App interna</div>
-      <h2>Operar el saloon</h2>
-      <p>Para socios, gerente, hostess, puerta, pedidos, caja y compras. Cada rol ve solo lo suyo.</p>
-      <ul><li>Tablero de socios: ventas, ocupación, merma, comparativo por sucursal, día, hora y temporada</li><li>Puerta: escáner de QR que distingue barra, cover, mesa, mesa VIP y cliente VIP</li><li>Local: plano vivo de Polanco y Pedregal, reservas, ficha del cliente, sentar y liberar</li><li>Pedidos: de meseros, de mesa y desde la app; la barra los surte, el cliente paga al instante y divide con amigos</li><li>Insumos: inventario con barra de existencia, merma y compras con factura XML; caja y cortes, clientes, personal</li><li>Asistente de IA que responde con los números del sistema</li></ul>
-      <a class="btn" href="interno/">Abrir app interna</a>
+<div id="loader" aria-hidden="true"><div class="mark"><img src="shared/img/logo.png" alt="Canta Corazón"></div><div class="track"><div class="fill"></div></div></div>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="plate"><div class="inner" id="plate"><img class="biglogo" src="shared/img/logo.png" alt="Canta Corazón" fetchpriority="high"></div></div>
+    <header class="site">
+      <nav class="left"><a href="#sistema" data-scroll>El sistema</a><a href="#pantallas" data-scroll>Pantallas</a><a href="#conectado" data-scroll>Todo conectado</a><a href="#experiencia" data-scroll>Experiencia</a></nav>
+      <div class="right"><button class="textbtn" data-open-modal>Probar el demo</button><button class="burger" id="btnMenu" aria-label="Abrir menú"><i></i><i></i></button></div>
+    </header>
+    <div class="title"><h1 id="heroTitle" class="rv" data-words="Toda La Noche" data-stagger="140" data-d="1100"></h1></div>
+    <div class="bottom">
+      <p class="tag lines" id="heroTag" data-lines="En un solo sistema,|no en un Google Form." data-stagger="110" data-base="350"></p>
+      <div class="cluster">
+        <div class="slider iv" data-dl="650"><div class="glass"><div class="sc" id="sc"></div></div><div class="dots" id="scDots" role="tablist"></div></div>
+        <article class="member glass iv" data-dl="780">
+          <div class="col"><div><div class="big">2 apps</div><div class="avs"><i style="background:#C25B32"></i><i style="background:#F6EFE4"></i><i style="background:#C99A2E"></i></div></div><div class="cap">Una app interna para el equipo y una app para el cliente, sobre la misma base de datos</div></div>
+          <img src="shared/img/carr1.jpg" alt="Interior de Canta Corazón" loading="lazy">
+        </article>
+      </div>
     </div>
-    <div class="card">
-      <div class="eyebrow">App del cliente</div>
-      <h2>Vivir la noche</h2>
-      <p>Abre desde un link en el celular, sin instalar nada.</p>
-      <ul><li>Reservar: escoge tu mesa en el plano, cuántos van, botellas en preventa</li><li>Divide la mesa con tus amigos y paga con Apple Pay, tarjeta, transferencia o efectivo</li><li>Mi noche: tu QR, tu mesa, tu grupo, la cuenta en vivo y pedir sin mesero</li><li>Pide tu canción con el mariachi</li><li>Amigos: solicitudes de pago y promociones compartidas</li><li>Recompensas: puntos, nivel VIP, promociones y cumpleaños</li></ul>
-      <a class="btn" href="cliente/">Abrir app del cliente</a>
+  </section>
+
+  <!-- PROPUESTA -->
+  <section class="trust" id="propuesta">
+    <div class="badges">
+      <div class="pct iv" data-s=".9" data-y="0"><b>Demo</b><span>funcional, listo para probarse en el teléfono</span></div>
+      <article class="bcard iv" data-dl="120" data-y="24"><span class="eyebrow">La propuesta</span><h3>Un sistema propio para Canta Corazón.</h3><p>Hoy la reserva de una mesa pasa por un Google Form. La propuesta es <b>una sola base de datos con dos apps</b>: una <b>app interna</b> para el equipo (puerta, hostess, barra, caja, compras y socios) y una <b>web app del cliente</b> que se abre con un enlace o un código QR, sin instalar nada. Ahí el cliente <b>reserva su mesa, paga el anticipo, entra con su QR, pide desde la mesa y acumula recompensas</b>. Polanco y Pedregal trabajan sobre la misma base, y los socios ven los números y le preguntan a un <b>asistente de IA</b> desde el teléfono. Nada de esto es una lámina: todo lo que hay en esta página funciona en el demo.</p></article>
     </div>
-  </div>
-  <div class="qr"><div id="qrc"></div><div><b>Abre la app del cliente en tu teléfono</b><span>Escanea este código. Si el teléfono y esta computadora no comparten navegador, el QR del cliente igual se valida en la puerta porque va firmado.</span></div></div>
-  <div class="steps"><h3>Recorrido sugerido para la reunión</h3><ol>
-    <li>En la app del cliente, reserva la mesa 14 del piso 1 con dos botellas y divide con dos amigos. Paga con Apple Pay.</li>
-    <li>En la app interna, entra como Puerta y escanea el QR (o usa «Simular escaneo»). Registra la entrada: la mesa aparece ocupada en el plano de la hostess.</li>
-    <li>Desde la app del cliente pide dos tragos a la mesa; entra como Pedidos y márcalos entregados. La cuenta del cliente se actualiza sola.</li>
-    <li>Entra como Socio: el tablero ya trae la venta, la ocupación y las alertas de la noche. Pregúntale al asistente qué sucursal vendió más.</li>
-    <li>Como Compras, importa la factura XML de ejemplo: el inventario sube solo.</li></ol></div>
-  <p class="foot">Presentan Carlos Martínez y Michel Tron · Septiembre 2026 · Demo con datos ilustrativos.</p>
-</div>
+  </section>
+
+  <!-- EL SISTEMA -->
+  <section class="programs" id="sistema">
+    <span class="eyebrow">El sistema</span>
+    <h2 class="big lines" data-lines="Un solo sistema|para todo el antro" data-stagger="120"></h2>
+    <p class="intro-p iv" data-y="20">Dos aplicaciones y una sola base de datos. <b>Cada dato se captura una vez</b> y aparece donde hace falta: en el teléfono del cliente, en el de la puerta, en la barra, en caja y en el tablero de los socios. Cada fila abre su demo.</p>
+    <ul class="plist" id="plist"></ul>
+  </section>
+
+  <!-- PANTALLAS -->
+  <section class="facil" id="pantallas">
+    <div class="grid">
+      <div class="intro">
+        <img class="icon iv" data-s=".85" data-y="0" src="shared/img/ccww.jpg" alt="Canta Corazón" loading="lazy">
+        <h2 class="big lines" data-lines="Así se ve|en el teléfono|del cliente" data-stagger="120" style="margin-top:1.5rem;"></h2>
+        <p class="body rv fade" data-words="El cliente escoge su mesa en el plano, aparta botellas en preventa, divide el anticipo con sus amigos y paga desde el teléfono. Recibe su QR, la puerta lo escanea y entra. Ya adentro, pide a la barra desde la mesa, pide su canción al mariachi y acumula recompensas en su noche." data-stagger="24" data-d="700" data-base="250"></p>
+      </div>
+      <div class="courts">
+        <figure class="terra iv" data-y="48" data-hover-scale="1.03"><img src="shared/img/shots/shot_cl_reservar.jpg" alt="App del cliente: reservar una mesa en el plano" loading="lazy"><figcaption><b>App del cliente · Reservar</b><span>Escoge la mesa en el plano de la sucursal y paga el anticipo desde el teléfono.</span></figcaption></figure>
+        <figure class="dark up iv" data-y="48" data-dl="140" data-hover-scale="1.03"><img src="shared/img/shots/shot_cl_noche.jpg" alt="App del cliente: la noche con su QR, sus pedidos y sus puntos" loading="lazy"><figcaption><b>App del cliente · Mi noche</b><span>Su QR para entrar, lo que ha pedido y sus recompensas, en una sola pantalla.</span></figcaption></figure>
+      </div>
+    </div>
+    <div class="wide iv" data-y="40">
+      <figure data-hover-scale="1.02"><img src="shared/img/shots/shot_mesas.jpg" alt="App interna: el plano de mesas en vivo" loading="lazy"><figcaption><b>App interna · Mesas y reservas</b><span>El plano de la sucursal en vivo: libre, reservada, con anticipo u ocupada. La reserva del cliente aparece sola.</span></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- TODO CONECTADO -->
+  <section class="conectado" id="conectado">
+    <span class="eyebrow light">Todo conectado</span>
+    <h2 class="big lines" data-lines="Una sola base,|dos sucursales." data-stagger="120"></h2>
+    <p class="lead iv" data-y="20">Polanco y Pedregal trabajan sobre la misma base de datos. <b>Cada reserva, cada entrada, cada pedido, cada factura y cada corte viven en el mismo lugar</b>, y los socios lo ven desde el teléfono sin pedirle el reporte a nadie.</p>
+    <dl>
+      <div class="cell iv" data-y="30"><dt>Reservas</dt><dd>El cliente entra a la web app con un enlace o escaneando un QR, sin instalar nada. Escoge su mesa en el plano, paga el anticipo y la reserva aparece sola en la pantalla de la hostess. Nada que copiar a mano.</dd><div class="qr"><div id="qrCliente" aria-label="Código QR de la app del cliente"></div><span>Escanéenlo desde otro teléfono: abre la app del cliente del demo.</span></div></div>
+      <div class="cell iv" data-y="30" data-dl="110"><dt>Puerta</dt><dd>Un QR distinto para barra, cover, mesa, mesa VIP y cliente VIP. La puerta escanea con el teléfono y el sistema dice qué es, de quién es y si ya está pagado. El QR va firmado: vale aunque venga de otro dispositivo.</dd></div>
+      <div class="cell iv" data-y="30" data-dl="220"><dt>Insumos</dt><dd>Cada trago descuenta su botella y cada botella tiene un costo. Las compras entran con el XML de la factura y la merma del cierre queda a la vista.</dd></div>
+      <div class="cell iv" data-y="30" data-dl="330"><dt>Números</dt><dd>Venta de la noche, personas y ocupación de mesas por sucursal; clientes frecuentes, VIP y cumpleaños del mes; y un asistente de IA que contesta con los datos del sistema.</dd></div>
+    </dl>
+  </section>
+
+  <!-- LO QUE CAMBIA -->
+  <section class="testi" id="beneficios">
+    <span class="eyebrow">Lo que cambia</span>
+    <h2 class="big lines" data-lines="Para cada quien,|algo distinto" data-stagger="120"></h2>
+    <ul>
+      <li class="iv" data-y="40"><figure class="tcard" data-hover-y="-8"><div><div class="q">Cliente</div><blockquote>Abre la web app con un enlace o un QR, reserva su mesa en un minuto, paga desde su teléfono y entra con su QR sin dar su nombre en la puerta. Pide desde la mesa y cada noche le suma recompensas.</blockquote></div><figcaption><b>Reservar y entrar sin fila</b><span>Cualquier día, cualquier hora</span></figcaption></figure></li>
+      <li class="iv" data-y="40" data-dl="120"><figure class="tcard" data-hover-y="-8"><div><div class="q">Equipo</div><blockquote>La puerta escanea y sabe quién entra. La hostess ve el plano en vivo. La barra recibe los pedidos en una sola cola. Caja cierra el turno con cada peso y su comprobante. Cada quien ve solo lo suyo.</blockquote></div><figcaption><b>Cada área en su pantalla</b><span>Puerta, hostess, barra, caja y compras</span></figcaption></figure></li>
+      <li class="iv" data-y="40" data-dl="240"><figure class="tcard" data-hover-y="-8"><div><div class="q">Socios</div><blockquote>Ven la venta de la noche, la ocupación, la merma y las compras de las dos sucursales desde el teléfono. Y le preguntan al asistente de IA en lenguaje normal; contesta con los datos del sistema.</blockquote></div><figcaption><b>Todo el antro en una pantalla</b><span>Dos sucursales, un tablero</span></figcaption></figure></li>
+    </ul>
+  </section>
+
+  <!-- CON QUIÉNES HEMOS TRABAJADO -->
+  <section class="work" id="experiencia">
+    <span class="eyebrow">Con quiénes hemos trabajado</span>
+    <h2 class="big lines" data-lines="Esto ya se hizo|a gran escala." data-stagger="120"></h2>
+    <div class="grid">
+      <article class="wcard dark iv" data-y="30"><div><span class="eyebrow light">Sistema integral</span><h3 style="margin-top:.75rem;">Una fábrica de hule a gran escala corre hoy sobre un sistema hecho por este equipo.</h3></div><p>Producción, almacén, mantenimiento, recursos humanos, calidad, documentos y un asistente de IA que contesta con los datos de la planta: la misma arquitectura que proponemos para Canta Corazón, con una sola base de datos y una pantalla para cada área.</p><div class="stats num"><div><b>+500</b><span>usuarios</span></div><div><b>+25</b><span>programas internos</span></div><div><b>+30</b><span>áreas conectadas</span></div></div></article>
+      <article class="wcard iv" data-y="30" data-dl="120"><div><span class="eyebrow">Auditoría comercial</span><h3 style="margin-top:.75rem;">Empresas que ya trabajaron nuestra auditoría comercial con este equipo.</h3></div><p>Una auditoría con un solo enfoque: romper el récord de ventas del negocio. Revisamos cómo entra cada cliente hoy, dónde se pierden ventas y qué cambiar para vender más con lo que ya se tiene.</p><div class="logos"><span>Allu</span><span>Kiwify</span><span>Hotmart</span><span>30X</span><span>Universidad Online</span></div></article>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site" id="demos">
+    <div class="cta">
+      <div><span class="eyebrow light">Prueben el demo</span><p class="h lines" data-lines="Ábranlo en|su teléfono." data-stagger="120"></p></div>
+      <div class="apps">
+        <a class="applink iv" data-y="20" href="cliente/?user=c1#noche"><img src="shared/img/shots/shot_cl_noche.jpg" alt=""><div><b>App del cliente</b><span>Reservar, pagar, entrar con QR y pedir</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="applink iv" data-y="20" data-dl="90" href="interno/?rol=hostess#mesas"><img src="shared/img/shots/shot_mesas.jpg" alt=""><div><b>App interna · Hostess</b><span>Plano de mesas, reservas, clientes y puerta</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="applink iv" data-y="20" data-dl="180" href="interno/?rol=socio#tablero"><img src="shared/img/shots/shot_tablero.jpg" alt=""><div><b>App interna · Socio</b><span>Tablero, todos los módulos y asistente de IA</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+    <div class="cols">
+      <div class="brandcol"><img src="shared/img/logo.png" alt="Canta Corazón"><p>Propuesta de sistema integral para Canta Corazón. Presentan Carlos Martínez y Michel Tron, con T.T AI Firm. El demo usa datos ilustrativos; los pagos, las facturas y los QR están simulados. En la versión real todo corre en la nube y se sincroniza entre teléfonos y sucursales.</p><address><span class="mut">Polanco · Pedregal</span><br><span class="mut">Ciudad de México · Septiembre 2026</span></address></div>
+      <nav aria-label="Demos"><h4>Demos</h4><ul><li><a href="cliente/?user=c1#noche">App del cliente</a></li><li><a href="interno/?rol=puerta#puerta">Puerta · escáner QR</a></li><li><a href="interno/?rol=hostess#mesas">Hostess · mesas</a></li><li><a href="interno/?rol=barra#pedidos">Barra · pedidos</a></li><li><a href="interno/?rol=caja#caja">Caja y cortes</a></li><li><a href="interno/?rol=compras#compras">Compras · XML</a></li><li><a href="interno/?rol=socio#tablero">Socio · tablero e IA</a></li></ul></nav>
+      <nav aria-label="Recorrido sugerido"><h4>Recorrido sugerido</h4><ol><li><a href="cliente/?user=c1#noche">Reserven una mesa desde la app del cliente y paguen el anticipo.</a></li><li><a href="interno/?rol=hostess#mesas">Vean la reserva aparecer en el plano de la hostess.</a></li><li><a href="interno/?rol=puerta#puerta">Escaneen el QR del cliente en la puerta.</a></li><li><a href="interno/?rol=barra#pedidos">Pidan desde la mesa y véanlo llegar a la barra.</a></li><li><a href="interno/?rol=socio#asistente">Pregúntenle al asistente de IA por la noche.</a></li></ol></nav>
+      <nav aria-label="Secciones"><h4>Secciones</h4><ul><li><a href="#propuesta" data-scroll>La propuesta</a></li><li><a href="#sistema" data-scroll>El sistema</a></li><li><a href="#pantallas" data-scroll>Pantallas</a></li><li><a href="#conectado" data-scroll>Todo conectado</a></li><li><a href="#beneficios" data-scroll>Lo que cambia</a></li><li><a href="#experiencia" data-scroll>Con quiénes hemos trabajado</a></li></ul></nav>
+    </div>
+    <div class="bottombar"><span>© 2026 T.T AI Firm · Propuesta para Canta Corazón</span><nav aria-label="Otros"><a href="interno/?rol=gerente#tablero">Gerente</a><a href="interno/?rol=mesero#mesas">Mesero</a><a href="interno/?rol=socio#config">Configuración</a></nav><span>Demo con datos ilustrativos</span></div>
+  </footer>
+</main>
+
+<div id="menu" aria-hidden="true"><div class="bg" data-close-menu></div><div class="panel"><div class="inner"><div class="toprow"><img src="shared/img/logo.png" alt="Canta Corazón"><button class="xbtn" data-close-menu aria-label="Cerrar menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <nav class="main"><a href="#propuesta" data-scroll style="--dl:120ms">La propuesta</a><a href="#sistema" data-scroll style="--dl:190ms">El sistema</a><a href="#pantallas" data-scroll style="--dl:260ms">Pantallas</a><a href="#conectado" data-scroll style="--dl:330ms">Todo conectado</a><a href="#experiencia" data-scroll style="--dl:400ms">Con quiénes hemos trabajado</a><a href="#demos" data-scroll style="--dl:470ms">Los demos</a></nav>
+  <div class="bottomrow"><button class="pill light" data-open-modal>Probar el demo<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><nav><a href="cliente/?user=c1#noche">Cliente</a><a href="interno/?rol=hostess#mesas">Hostess</a><a href="interno/?rol=puerta#puerta">Puerta</a><a href="interno/?rol=socio#tablero">Socio</a></nav></div></div></div></div>
+
+<div id="modal" aria-hidden="true"><div class="bg" data-close-modal></div><div class="panel" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;"><div><span class="eyebrow">Probar el demo</span><h2 id="mTitle" class="lines" data-lines="Elijan|una app" data-stagger="90"></h2></div><button class="xbtn" data-close-modal aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="opts">
+    <a class="applink" href="cliente/?user=c1#noche"><img src="shared/img/shots/shot_cl_noche.jpg" alt=""><div><b>App del cliente</b><span>Reservar, pagar, entrar con QR y pedir</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="applink" href="interno/?rol=hostess#mesas"><img src="shared/img/shots/shot_mesas.jpg" alt=""><div><b>App interna · Hostess</b><span>Plano de mesas, reservas, clientes y puerta</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="applink" href="interno/?rol=socio#tablero"><img src="shared/img/shots/shot_tablero.jpg" alt=""><div><b>App interna · Socio</b><span>Tablero, todos los módulos y asistente de IA</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div></div></div>
+
 <script src="shared/vendor/qrcode.min.js"></script>
-<script>new QRCode(document.getElementById('qrc'), { text: location.href.replace(/index\.html$/, '') + 'cliente/', width: 96, height: 96, colorDark: '#320707', colorLight: '#FFFDF9', correctLevel: QRCode.CorrectLevel.M });</script>
+<script>(function(){ var el=document.getElementById('qrCliente'); if(!el||!window.QRCode) return; var base=location.origin+location.pathname.replace(/[^\/]*$/,''); new QRCode(el,{text: base+'cliente/?user=c1#noche', width: 176, height: 176, colorDark: '#130708', colorLight: '#F6EFE4', correctLevel: QRCode.CorrectLevel.M}); })();</script>
+<script type="module">
+  const FONT_BASE = 16, BASE_W = 1920, COEF = 0.6666; const html = document.documentElement;
+  function fitRem() { const reduction = ((BASE_W - innerWidth) / BASE_W) * 100 * COEF; const size = FONT_BASE - (FONT_BASE * reduction) / 100; if (size > FONT_BASE) html.style.fontSize = size + 'px'; else html.style.removeProperty('font-size'); }
+  fitRem(); addEventListener('resize', fitRem); scrollTo(0, 0);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; const isMobile = () => innerWidth <= 768;
+  let lenis = null; const sinLenis = new URLSearchParams(location.search).has('nolenis') || matchMedia('(pointer: coarse)').matches; try { if (!sinLenis) { const { default: Lenis } = await import('lenis'); lenis = new Lenis({ smoothWheel: true }); const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); } } catch (e) { lenis = null; } window.__lenis = lenis;
+  const lock = (on) => { if (lenis) on ? lenis.stop() : lenis.start(); html.classList.toggle('locked', on); };
+  const goTo = (sel) => { const el = document.querySelector(sel); if (!el) return; if (lenis) lenis.scrollTo(el, { offset: -8 }); else el.scrollIntoView({ behavior: 'smooth' }); };
+  document.querySelectorAll('[data-scroll]').forEach(a => a.addEventListener('click', (e) => { const h = a.getAttribute('href'); if (h && h.startsWith('#')) { e.preventDefault(); closeMenu(); setTimeout(() => goTo(h), 60); } }));
+  class Spring { constructor(v, k, c) { this.x = v; this.v = 0; this.t = v; this.k = k; this.c = c; this.done = true; } set(t) { this.t = t; this.done = false; } step(dt) { if (this.done) return false; const a = -this.k * (this.x - this.t) - this.c * this.v; this.v += a * dt; this.x += this.v * dt; if (Math.abs(this.v) < 0.002 && Math.abs(this.x - this.t) < 0.002) { this.x = this.t; this.v = 0; this.done = true; } return true; } }
+  const springs = []; let last = performance.now();
+  function loop(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; springs.forEach(s => { let moved = false; Object.values(s.vals).forEach(v => { if (v.step(dt)) moved = true; }); if (moved || !s.applied) { s.apply(); s.applied = true; } }); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+  function hover(el, target, from, to, k, c) { if (!el || !target) return; const vals = {}; Object.keys(from).forEach(p => vals[p] = new Spring(from[p], k, c)); const rec = { vals, applied: false, apply() { const x = vals.x ? vals.x.x : 0, y = vals.y ? vals.y.x : 0, s = vals.scale ? vals.scale.x : 1, r = vals.rotate ? vals.rotate.x : 0; target.style.transform = `translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg)`; if (vals.opacity) target.style.opacity = vals.opacity.x; } }; springs.push(rec); el.addEventListener('pointerenter', () => { if (isMobile()) return; Object.keys(to).forEach(p => vals[p].set(to[p])); }); el.addEventListener('pointerleave', () => { Object.keys(from).forEach(p => vals[p].set(from[p])); }); }
+  function words(el) { if (el.dataset.ready) return; el.dataset.ready = '1'; const st = Number(el.dataset.stagger || 140), d = Number(el.dataset.d || 1100), base = Number(el.dataset.base || 0); el.innerHTML = el.dataset.words.split(' ').map((w, i) => `<span class="w"><span style="--d:${d}ms;--dl:${base + i * st}ms">${w}</span></span>`).join(' '); }
+  function lines(el) { if (el.dataset.ready) return; el.dataset.ready = '1'; const st = Number(el.dataset.stagger || 120), base = Number(el.dataset.base || 0); el.innerHTML = el.dataset.lines.split('|').map((l, i) => `<span class="l"><span style="--dl:${base + i * st}ms">${l}</span></span>`).join(''); }
+  document.querySelectorAll('.rv[data-words]').forEach(words); document.querySelectorAll('.lines[data-lines]').forEach(lines);
+  const io = new IntersectionObserver((entries) => { entries.forEach(en => { if (!en.isIntersecting) return; const el = en.target; if (el.dataset.gate === 'loader' && !ready) return; el.classList.add('in'); io.unobserve(el); }); }, { threshold: 0.12 });
+  document.querySelectorAll('.iv, .rv, .lines').forEach(el => { if (el.closest('#modal')) return; if (el.closest('.hero')) el.dataset.gate = 'loader'; io.observe(el); });
+  let ready = false; const MIN = reduced ? 200 : 1400, MAX = 2600, EXIT = reduced ? 1 : 850; const loader = document.getElementById('loader'); lock(true);
+  requestAnimationFrame(() => loader.classList.add('ready'));
+  function reveal() { if (ready) return; ready = true; lock(false); loader.classList.add('out'); setTimeout(() => loader.remove(), EXIT + 50); document.querySelectorAll('.hero .iv, .hero .rv, .hero .lines').forEach(el => el.classList.add('in')); startSlider(); if (location.hash && document.querySelector(location.hash)) setTimeout(() => goTo(location.hash), 120); }
+  const arm = () => setTimeout(reveal, MIN); if (document.readyState === 'complete') arm(); else addEventListener('load', arm, { once: true }); setTimeout(reveal, MAX);
+  const px = []; function reg(el, fn) { px.push({ el, fn }); }
+  function progressOf(el) { const r = el.getBoundingClientRect(); const h = innerHeight; return Math.min(1, Math.max(0, (h - r.top) / (h + r.height))); }
+  function onScroll() { px.forEach(({ el, fn }) => fn(progressOf(el))); }
+  if (lenis) lenis.on('scroll', onScroll); addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll);
+  const plate = document.getElementById('plate'); reg(document.querySelector('.hero'), (p) => { plate.style.transform = `translateY(${(p * 10).toFixed(2)}%) scale(${(1 - p * 0.06).toFixed(3)})`; });
+  const SLIDES = [
+    { img: 'shared/img/shots/shot_cl_noche.jpg', brand: 'Demo · app del cliente', title: 'Reservar, entrar con QR y pedir', href: 'cliente/?user=c1#noche', alt: 'Pantalla de la app del cliente' },
+    { img: 'shared/img/shots/shot_mesas.jpg', brand: 'Demo · app interna', title: 'El plano de mesas en vivo', href: 'interno/?rol=hostess#mesas', alt: 'Plano de mesas de la app interna' },
+    { img: 'shared/img/shots/shot_tablero.jpg', brand: 'Demo · tablero de socios', title: 'Los números y el asistente de IA', href: 'interno/?rol=socio#tablero', alt: 'Tablero de socios de la app interna' },
+  ];
+  const sc = document.getElementById('sc'), scDots = document.getElementById('scDots'); let si = 0, sTimer = null;
+  function drawSlide(i, first) { const s = SLIDES[i]; const paint = () => { sc.innerHTML = `<img src="${s.img}" alt="${s.alt}" loading="lazy"><div><b>${s.brand}</b><span>${s.title}</span><a href="${s.href}">Abrir →</a></div>`; sc.classList.remove('swap'); }; if (first) paint(); else { sc.classList.add('swap'); setTimeout(paint, 240); } scDots.innerHTML = SLIDES.map((_, k) => `<button role="tab" aria-label="Demo ${k + 1}" aria-current="${k === i}"><i></i></button>`).join(''); scDots.querySelectorAll('button').forEach((b, k) => b.onclick = () => { si = k; drawSlide(si); restartSlider(); }); }
+  function restartSlider() { clearInterval(sTimer); sTimer = setInterval(() => { si = (si + 1) % SLIDES.length; drawSlide(si); }, 3800); }
+  function startSlider() { drawSlide(si, true); restartSlider(); }
+  const PROGS = [
+    ['01', 'App del cliente', 'Entra con un enlace o un código QR, sin instalar nada. Reserva su mesa en el plano de la sucursal, aparta botellas en preventa, divide el anticipo con sus amigos y paga desde el teléfono. Su QR lo mete a la puerta; desde la mesa pide a la barra, pide su canción al mariachi y acumula recompensas noche tras noche.', 'cliente/?user=c1#noche', 'Demo · cliente'],
+    ['02', 'Puerta y QR por tipo', 'Cada entrada tiene su propio QR: barra, cover, mesa, mesa VIP o cliente VIP. La puerta escanea con el teléfono, el sistema dice qué es, de quién es y si ya está pagado, y el acceso queda registrado al segundo. El QR va firmado: vale aunque venga de otro dispositivo.', 'interno/?rol=puerta#puerta', 'Demo · rol puerta'],
+    ['03', 'Mesas y reservas', 'El plano de cada sucursal en vivo: libre, reservada, con anticipo pagado u ocupada. La hostess asigna, mueve y libera desde el teléfono, y la reserva que el cliente hizo en su app aparece sola en el plano. Se acaba el Google Form.', 'interno/?rol=hostess#mesas', 'Demo · rol hostess'],
+    ['04', 'Pedidos y barra', 'La barra en vivo: lo que piden los meseros, lo que llega de la mesa y lo que el cliente pide desde su app, en una sola cola con nuevos, en preparación y entregados. Cada pedido se suma a la cuenta de la mesa y descuenta su botella.', 'interno/?rol=barra#pedidos', 'Demo · rol barra'],
+    ['05', 'Inventario, merma y compras', 'Botellas en existencia, abiertas en barra, valor del inventario y merma del último cierre, por sucursal. Las compras entran cargando el XML de la factura, con proveedores, precio histórico y lo que falta por pagar.', 'interno/?rol=compras#compras', 'Demo · rol compras'],
+    ['06', 'Caja y cortes', 'Cada peso con su comprobante y su renglón: efectivo, tarjeta, transferencia y Apple Pay. Conciliación con la terminal y corte de turno por sucursal. Al confirmar el cobro, el QR del cliente queda activo.', 'interno/?rol=caja#caja', 'Demo · rol caja'],
+    ['07', 'Clientes', 'Quién viene, cuántas veces, cuánto gasta, sus puntos y cuándo cumple años. Frecuentes y VIP identificados desde la puerta, y campañas para los que cumplen este mes.', 'interno/?rol=hostess#clientes', 'Demo · rol hostess'],
+    ['08', 'Tablero de socios y asistente de IA', 'Venta de la noche, personas y ocupación de mesas, por sucursal, con alertas de cortesías. Y un asistente de inteligencia artificial al que los socios le preguntan en lenguaje normal y contesta con los datos del sistema: cualquier número, al momento.', 'interno/?rol=socio#tablero', 'Demo · rol socio'],
+  ];
+  document.getElementById('plist').innerHTML = PROGS.map(([n, t, d, h, tag], i) => `<li><a href="${h}"><div class="row iv" data-y="26" data-dl="${i * 90}"><span class="n num">${n}</span><span class="tx"><b>${t}</b><span>${d}</span><small>${tag} →</small></span><span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></a></li>`).join('');
+  document.querySelectorAll('#plist .row').forEach(r => { io.observe(r); hover(r.closest('a'), r.querySelector('.ar'), { x: 0, opacity: .55 }, { x: 8, opacity: 1 }, 300, 20); });
+  document.querySelectorAll('[data-hover-scale]').forEach(f => hover(f, f.querySelector('img'), { scale: 1 }, { scale: Number(f.dataset.hoverScale) }, 300, 22));
+  document.querySelectorAll('[data-hover-y]').forEach(c => hover(c, c, { y: 0 }, { y: Number(c.dataset.hoverY) }, 300, 22));
+  document.querySelectorAll('.pill, .applink').forEach(p => { const svg = p.querySelector('svg'); if (svg) hover(p, svg, { x: 0 }, { x: 5 }, 320, 20); });
+  document.querySelectorAll('.xbtn').forEach(b => hover(b, b.querySelector('svg'), { rotate: 0 }, { rotate: 90 }, 300, 18));
+  const menu = document.getElementById('menu'); const modal = document.getElementById('modal'); const mTitle = document.getElementById('mTitle');
+  function openMenu() { menu.classList.add('open'); menu.setAttribute('aria-hidden', 'false'); lock(true); }
+  function closeMenu() { if (!menu.classList.contains('open')) return; menu.classList.remove('open'); menu.setAttribute('aria-hidden', 'true'); if (!modal.classList.contains('open')) lock(false); }
+  document.getElementById('btnMenu').onclick = openMenu; document.querySelectorAll('[data-close-menu]').forEach(b => b.addEventListener('click', closeMenu));
+  function openModal() { closeMenu(); modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); lock(true); requestAnimationFrame(() => mTitle.classList.add('in')); }
+  function closeModal() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); lock(false); setTimeout(() => mTitle.classList.remove('in'), 350); }
+  document.querySelectorAll('[data-open-modal]').forEach(b => b.addEventListener('click', openModal)); document.querySelectorAll('[data-close-modal]').forEach(b => b.addEventListener('click', closeModal));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeMenu(); if (modal.classList.contains('open')) closeModal(); } });
+  onScroll();
+</script>
 </body>
 </html>
