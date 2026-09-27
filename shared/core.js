@@ -1,9 +1,10 @@
 /* Canta Corazón · Demo · núcleo compartido (datos, almacén, QR, métricas)
    Demo local: los datos viven en localStorage del navegador y se sincronizan entre pestañas
-   del mismo dispositivo (BroadcastChannel + evento storage). Todos los datos son ILUSTRATIVOS. */
+   del mismo dispositivo (BroadcastChannel + evento storage). Todos los datos son ILUSTRATIVOS.
+   La «noche en vivo» del demo es siempre el sábado más reciente, para que cuadre con el historial. */
 (function () {
   'use strict';
-  const KEY = 'cc_demo_v8';
+  const KEY = 'cc_demo_v9';
   const SECRET = 'canta-corazon-demo-2026'; // solo demo: en producción la firma vive en el servidor
   const CANAL = 'cc-demo';
 
@@ -17,8 +18,12 @@
   const uid = (p = 'id') => p + '_' + (Date.now().toString(36)) + '_' + (uidN++).toString(36) + Math.floor(Math.random() * 1e4).toString(36);
   const pad = (n) => String(n).padStart(2, '0');
   const fechaISO = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-  const hoy = () => fechaISO(new Date());
-  const ahoraHM = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+  // noche del demo: el sábado más reciente (hoy, si es sábado)
+  const NOCHE = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 1) % 7); return d; })();
+  const hoy = () => fechaISO(NOCHE);
+  // reloj del demo: siempre las 23 h con los minutos reales; la noche sembrada llega justo hasta esa hora
+  const ahoraHM = () => '23:' + pad(new Date().getMinutes());
+  const HORA_DEMO = 23;
   const money = (n, dec = 0) => '$' + Number(n || 0).toLocaleString('es-MX', { minimumFractionDigits: dec, maximumFractionDigits: dec });
   const pct = (n, d = 1) => (Number(n || 0)).toFixed(d) + '%';
   const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -70,14 +75,14 @@
 
   const PRODUCTOS = [
     // botellas (venta por botella; costo ilustrativo)
-    { id: 'b_tequila_rep', cat: 'botella', nombre: 'Tequila reposado 750 ml', precio: 3200, costo: 980, ml: 750, base: 'tequila' },
-    { id: 'b_tequila_bl', cat: 'botella', nombre: 'Tequila blanco 750 ml', precio: 2900, costo: 860, ml: 750, base: 'tequila_bl' },
-    { id: 'b_mezcal', cat: 'botella', nombre: 'Mezcal joven 750 ml', precio: 2800, costo: 790, ml: 750, base: 'mezcal' },
-    { id: 'b_vodka', cat: 'botella', nombre: 'Vodka 750 ml', precio: 2600, costo: 720, ml: 750, base: 'vodka' },
-    { id: 'b_whisky', cat: 'botella', nombre: 'Whisky 12 años 750 ml', precio: 3900, costo: 1350, ml: 750, base: 'whisky' },
-    { id: 'b_gin', cat: 'botella', nombre: 'Gin 750 ml', precio: 2700, costo: 760, ml: 750, base: 'gin' },
-    { id: 'b_champ', cat: 'botella', nombre: 'Champaña 750 ml', precio: 4800, costo: 1900, ml: 750, base: 'champ' },
-    { id: 'b_aperol', cat: 'botella', nombre: 'Aperol 750 ml', precio: 2200, costo: 520, ml: 750, base: 'aperol' },
+    { id: 'b_tequila_rep', cat: 'botella', nombre: 'Tequila reposado 750 ml', precio: 3200, costo: 820, ml: 750, base: 'tequila' },
+    { id: 'b_tequila_bl', cat: 'botella', nombre: 'Tequila blanco 750 ml', precio: 2900, costo: 720, ml: 750, base: 'tequila_bl' },
+    { id: 'b_mezcal', cat: 'botella', nombre: 'Mezcal joven 750 ml', precio: 2800, costo: 690, ml: 750, base: 'mezcal' },
+    { id: 'b_vodka', cat: 'botella', nombre: 'Vodka 750 ml', precio: 2600, costo: 610, ml: 750, base: 'vodka' },
+    { id: 'b_whisky', cat: 'botella', nombre: 'Whisky 12 años 750 ml', precio: 3900, costo: 1120, ml: 750, base: 'whisky' },
+    { id: 'b_gin', cat: 'botella', nombre: 'Gin 750 ml', precio: 2700, costo: 640, ml: 750, base: 'gin' },
+    { id: 'b_champ', cat: 'botella', nombre: 'Champaña 750 ml', precio: 4800, costo: 1450, ml: 750, base: 'champ' },
+    { id: 'b_aperol', cat: 'botella', nombre: 'Aperol 750 ml', precio: 2200, costo: 450, ml: 750, base: 'aperol' },
     // coctelería (receta: ml de la botella base)
     { id: 't_canta', cat: 'trago', nombre: 'Canta Corazón', precio: 260, costo: 62, receta: [['tequila', 45], ['aperol', 15]] , desc: 'Tequila reposado, guayaba, fresa, Aperol y limón' },
     { id: 't_elote', cat: 'trago', nombre: 'Elote Margarita', precio: 240, costo: 55, receta: [['tequila_bl', 50]], desc: 'Tequila blanco, elote, estragón y limón' },
@@ -88,8 +93,8 @@
     { id: 't_whiskysour', cat: 'trago', nombre: 'Whisky sour', precio: 240, costo: 60, receta: [['whisky', 50]] },
     { id: 't_shot_mango', cat: 'trago', nombre: 'Shot Baby Mango', precio: 120, costo: 22, receta: [['tequila_bl', 30]] },
     // cerveza y sin alcohol
-    { id: 'c_clara', cat: 'cerveza', nombre: 'Cerveza clara', precio: 95, costo: 28 },
-    { id: 'c_oscura', cat: 'cerveza', nombre: 'Cerveza oscura', precio: 95, costo: 28 },
+    { id: 'c_clara', cat: 'cerveza', nombre: 'Cerveza clara', precio: 95, costo: 24 },
+    { id: 'c_oscura', cat: 'cerveza', nombre: 'Cerveza oscura', precio: 95, costo: 25 },
     { id: 'c_agua', cat: 'cerveza', nombre: 'Agua mineral', precio: 60, costo: 14 },
     { id: 'c_refresco', cat: 'cerveza', nombre: 'Refresco', precio: 60, costo: 14 },
     { id: 'c_ninafresa', cat: 'cerveza', nombre: 'Niña Fresa (sin alcohol)', precio: 150, costo: 30 },
@@ -121,9 +126,31 @@
     ['Valentina Cruz', 'gerente'], ['Lucía Farías', 'hostess'], ['Tomás Beltrán', 'puerta'], ['Nicolás Prado', 'puerta'], ['Adrián Salas', 'barra'], ['Mateo Lugo', 'barra'], ['Carla Pineda', 'mesero'], ['Rubén Castillo', 'mesero'], ['Itzel Romero', 'mesero'], ['Bruno Delgado', 'mesero'], ['Patricia Nieto', 'caja'], ['Omar Quintero', 'compras']
   ];
 
+  // ───────────────────────── promociones (solo publica la casa) ─────────────────────────
+  // Promociones y comentarios de EJEMPLO; en la fase real las publica el local desde el sistema interno.
+  function semillaPromos(db) {
+    const k = (clienteId, texto, min) => ({ id: 'cm_' + clienteId + '_' + min, clienteId, texto, min });
+    db.promos = [
+      { id: 'pr1', tipo: 'foto', img: 'post_noche.webp', historia: 'Esta noche', suc: 's1', min: 95, titulo: 'Sábado en Polanco', texto: 'El mariachi sube a las 11:30 y el coro arranca en cuanto se llena la pista. Todavía hay mesas en planta alta.', likesBase: 412, likes: ['c2', 'c3', 'c5'], guardados: [], envios: 3, canjes: 0, cta: { txt: 'Reservar mesa', accion: 'reservar' },
+        coment: [k('c8', '¿Hasta qué hora hay mesas? Vamos seis', 70), k('casa', 'Camila, hay mesas para seis en planta alta hasta las 11. Resérvala desde la app y entras con tu QR.', 64), k('c12', 'El mejor plan de sábado', 41), k('c3', 'Mariana, ya vamos en camino', 12)] },
+      { id: 'pr2', tipo: 'cartel', tema: 'terra', historia: 'Promos', suc: 'all', min: 60 * 26, grande: '2×1', titulo: 'en coctelería', sub: 'Antes de las 10 pm · de martes a jueves', texto: 'Canta Corazón, Elote Margarita y Acá Entre Nos al 2×1. Muestra la promo en tu app al pedir.', likesBase: 896, likes: ['c3', 'c4'], guardados: ['c1'], envios: 41, canjes: 128, cta: { txt: 'Usar promo', accion: 'canje' },
+        coment: [k('c14', 'Martes de despecho entonces', 1400), k('c7', '¿Aplica en Pedregal?', 1320), k('casa', 'Sí, Andrés: en Polanco y en Pedregal.', 1300)] },
+      { id: 'pr3', tipo: 'foto', img: 'post_sombrero.webp', historia: 'Cumpleaños', suc: 'all', min: 60 * 50, titulo: 'Tu cumpleaños va por la casa', texto: 'Reserva tu mesa de cumpleaños y la primera canción con el mariachi va por nosotros. El pastel llega con tu nombre.', likesBase: 1340, likes: ['c6'], guardados: [], envios: 57, canjes: 22, cta: { txt: 'Reservar mi cumpleaños', accion: 'reservar' },
+        coment: [k('c11', 'La mejor forma de cumplir años', 2900), k('c16', 'Me cantaron El Rey y lloré', 2750)] },
+      { id: 'pr4', tipo: 'cartel', tema: 'ink', historia: 'Puntos', suc: 'all', min: 60 * 72, grande: 'Cover', titulo: 'gratis para un amigo', sub: 'Jueves · canjéalo con 600 puntos', texto: 'Tráete a alguien que nunca ha venido: su cover va por tus puntos. Se canjea desde la app.', likesBase: 530, likes: [], guardados: [], envios: 88, canjes: 34, cta: { txt: 'Canjear 600 pts', accion: 'canje' },
+        coment: [k('c20', 'Ya tengo a quién llevar', 4100)] },
+      { id: 'pr5', tipo: 'foto', img: 'post_frase.webp', suc: 'all', min: 60 * 120, titulo: 'Una cantadita y se te reinicia la vida', texto: 'Porque todos tenemos algo que cantar y algo que sanar.', likesBase: 2210, likes: ['c2'], guardados: [], envios: 12, canjes: 0, cta: null,
+        coment: [k('c18', 'Justo lo que necesitaba leer hoy', 7000)] },
+      { id: 'pr6', tipo: 'foto', img: 'post_fachada.webp', historia: 'Polanco', suc: 's1', min: 60 * 150, titulo: 'Reserva desde la app', texto: 'Escoge tu mesa en el plano, divide el anticipo con tus amigos y entra con tu QR. Sin filas y sin formularios.', likesBase: 640, likes: [], guardados: [], envios: 19, canjes: 0, cta: { txt: 'Reservar', accion: 'reservar' },
+        coment: [k('c9', 'Mucho más fácil que por WhatsApp', 8800)] }
+    ];
+    // promos que un cliente le mandó a otro dentro de la app
+    db.buzon = [{ id: 'bz1', promoId: 'pr2', de: 'c3', para: 'c1', nota: '¿Vamos el jueves antes de las 10?', min: 38, visto: false }];
+  }
+
   // ───────────────────────── semilla ─────────────────────────
   function semilla() {
-    const db = { version: 1, creado: new Date().toISOString(), config: { cupoVisible: true, precios: PRECIOS, nombreDemo: 'Canta Corazón · Demo' } };
+    const db = { version: 1, noche: hoy(), creado: new Date().toISOString(), config: { cupoVisible: true, precios: PRECIOS, nombreDemo: 'Canta Corazón · Demo' } };
     db.sucursales = SUCURSALES.map(s => ({ ...s }));
     db.mesas = planoPolanco().concat(planoSuc2());
     db.productos = PRODUCTOS.map(p => ({ ...p }));
@@ -170,7 +197,7 @@
     db.facturas = [];
     for (let i = 0; i < 26; i++) {
       const prov = pick(db.proveedores); const s = pick(db.sucursales);
-      const d = new Date(); d.setDate(d.getDate() - Math.floor(rnd() * 60));
+      const d = new Date(NOCHE); d.setDate(d.getDate() - Math.floor(rnd() * 60));
       const cands = db.productos.filter(p => (prov.cat.startsWith('Licores') && p.cat === 'botella') || (prov.cat.startsWith('Cerveza') && p.cat === 'cerveza') || (prov.cat === 'Alimentos' && p.cat === 'comida') || (prov.cat === 'Merchandising' && p.id === 'x_sombrero'));
       const conceptos = []; const nC = 1 + Math.floor(rnd() * 3);
       for (let k = 0; k < nC && cands.length; k++) { const p = pick(cands); const cant = p.cat === 'botella' ? 6 * (1 + Math.floor(rnd() * 4)) : 24 * (1 + Math.floor(rnd() * 3)); const unit = round(p.costo * between(0.92, 1.12), 2); conceptos.push({ prodId: p.id, desc: p.nombre, cant, unit, importe: round(cant * unit, 2) }); }
@@ -181,17 +208,17 @@
 
     // historial de ventas por día (120 días) y por hora
     db.ventasHist = [];
-    const hoyD = new Date(); hoyD.setHours(0, 0, 0, 0);
+    const hoyD = new Date(NOCHE);
     const wk = { 0: 0.30, 1: 0.08, 2: 0.14, 3: 0.36, 4: 0.70, 5: 0.95, 6: 1.0 };
     const mes = { 0: 0.80, 1: 1.10, 2: 0.95, 3: 0.92, 4: 1.00, 5: 0.90, 6: 0.88, 7: 0.95, 8: 1.05, 9: 0.98, 10: 1.12, 11: 1.32 };
     for (let i = 365; i >= 1; i--) {
       const d = new Date(hoyD); d.setDate(d.getDate() - i);
       db.sucursales.forEach(s => {
-        const f = wk[d.getDay()] * mes[d.getMonth()] * s.factor * between(0.88, 1.12);
+        const f0 = wk[d.getDay()] * mes[d.getMonth()] * between(0.88, 1.12); const f = f0 * s.factor;
         const personas = round(s.aforo * 0.74 * f);
-        const cover = round(personas * 0.55 * PRECIOS.cover);
-        const mesasOc = Math.min(db.mesas.filter(m => m.suc === s.id).length, round(db.mesas.filter(m => m.suc === s.id).length * Math.min(1, f * 1.05)));
-        const ventaMesas = round(mesasOc * between(4600, 6400));
+        const cover = round(personas * 0.72 * PRECIOS.cover);
+        const nMesas = db.mesas.filter(m => m.suc === s.id).length; const mesasOc = Math.min(nMesas, round(nMesas * Math.min(1, f0 * 1.05)));
+        const ventaMesas = round(mesasOc * between(9800, 13400));
         const ventaBarra = round(personas * between(150, 205));
         const ventaCocina = round(personas * between(60, 95));
         const merma = round(between(1.1, 2.6) + (s.id === 's2' && d.getDay() === 6 ? 0.9 : 0), 1);
@@ -223,10 +250,13 @@
       });
     };
     ocupar(mesasS1, 's1', 12, 5, 2);
-    ocupar(mesasS2, 's2', 8, 3, 1);
+    ocupar(mesasS2, 's2', 7, 3, 1);
     // covers y barra (accesos sin mesa)
-    const nCov = { s1: 470, s2: 250 };
+    const nCov = { s1: 470, s2: 235 };
     db.sucursales.forEach(s => { for (let i = 0; i < nCov[s.id]; i++) { const c = pick(db.clientes.slice(6)); const tipo = rnd() < 0.72 ? 'cover' : (rnd() < 0.7 ? 'barra' : 'clientevip'); db.accesos.push({ id: uid('a'), suc: s.id, fecha: H, hora: (19 + Math.floor(rnd() * 5)) % 24 + ':' + pad(Math.floor(rnd() * 60)), tipo, nombre: c.nombre, personas: 1, resultado: rnd() < 0.985 ? 'ok' : 'usado', puerta: 'Escáner ' + (1 + Math.floor(rnd() * 2)) }); if (tipo !== 'clientevip') db.pagos.push({ id: uid('pg'), suc: s.id, fecha: H, hora: '21:00', clienteId: c.id, concepto: tipo === 'cover' ? 'Cover' : 'Acceso barra', monto: tipo === 'cover' ? PRECIOS.cover : PRECIOS.barra, metodo: pick(['tarjeta', 'applepay', 'efectivo', 'spei']), estado: 'aprobado', propina: 0 }); } });
+    // consumo en barra de quien no tiene mesa (tickets de la terminal de barra)
+    const tickets = { s1: 190, s2: 85 };
+    db.sucursales.forEach(s => { for (let i = 0; i < tickets[s.id]; i++) db.pagos.push({ id: uid('pg'), suc: s.id, fecha: H, hora: (20 + Math.floor(rnd() * 4)) + ':' + pad(Math.floor(rnd() * 60)), clienteId: null, concepto: 'Consumo en barra', monto: round(between(280, 980) / 10) * 10, metodo: pick(['tarjeta', 'tarjeta', 'applepay', 'efectivo']), estado: 'aprobado', propina: round(between(20, 120) / 10) * 10 }); });
     // pedidos de las mesas sentadas
     const meserosPor = { s1: db.personal.filter(e => e.suc === 's1' && e.rol === 'mesero'), s2: db.personal.filter(e => e.suc === 's2' && e.rol === 'mesero') };
     db.reservas.filter(r => r.estado === 'sentada').forEach(r => {
@@ -245,11 +275,12 @@
     db.canciones.push({ id: uid('sg'), suc: 's1', mesaId: 'm3', cancion: 'Amor eterno', dedicatoria: 'Para Sofía, de todos nosotros', monto: 500, estado: 'en cola', hora: '22:48' });
     db.canciones.push({ id: uid('sg'), suc: 's1', mesaId: 'm7', cancion: 'El Rey', dedicatoria: '', monto: 500, estado: 'cantada', hora: '22:10' });
     // conteo de cierre de ayer (para la merma)
-    const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
+    const ayer = new Date(NOCHE); ayer.setDate(ayer.getDate() - 1);
     db.sucursales.forEach(s => {
       const items = db.productos.filter(p => p.cat === 'botella').map(p => { const teo = round(between(6, 16), 1); const dif = p.id === 'b_aperol' && s.id === 's2' ? -0.9 : round(between(-0.7, 0.1), 1); return { prodId: p.id, teorico: teo, fisico: round(teo + dif, 1) }; });
       db.mermas.push({ id: uid('mm'), suc: s.id, fecha: fechaISO(ayer), turno: 'Noche', items, responsable: db.personal.find(e => e.suc === s.id && e.rol === 'barra').id });
     });
+    semillaPromos(db);
     db.bitacora.push({ t: Date.now(), quien: 'sistema', que: 'Datos de demostración generados' });
     return db;
   }
@@ -316,7 +347,7 @@
   const subs = new Set();
   let bc = null; try { bc = new BroadcastChannel(CANAL); } catch (e) { bc = null; }
   function load() {
-    try { const raw = localStorage.getItem(KEY); if (raw) { db = JSON.parse(raw); if (db && db.version === 1) return db; } } catch (e) { }
+    try { const raw = localStorage.getItem(KEY); if (raw) { db = JSON.parse(raw); if (db && db.version === 1 && db.noche === hoy()) return db; } } catch (e) { }
     db = semilla(); persist(false); return db;
   }
   function persist(notify = true) {
@@ -336,9 +367,13 @@
   const b64u = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   const unb64u = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4))));
   async function firmar(txt) { const k = await key(); const sig = await crypto.subtle.sign('HMAC', k, enc.encode(txt)); return Array.from(new Uint8Array(sig)).slice(0, 10).map(b => b.toString(16).padStart(2, '0')).join(''); }
-  async function tokenQR(r) {
+  // QR por persona: c = quién lo trae (cada integrante del grupo tiene el suyo); h = su nombre si no es el titular
+  async function tokenQR(r, portadorId) {
     const mesa = r.mesaId ? db.mesas.find(m => m.id === r.mesaId) : null;
-    const payload = { v: 1, id: r.id, t: r.tipo, s: r.suc, f: r.fecha, m: mesa ? mesa.num : null, p: mesa ? mesa.piso : null, n: r.nombre, q: r.personas, pg: r.pagado >= (r.anticipo || 0) ? 1 : 0 };
+    const c = portadorId || r.clienteId || null; const parte = (r.grupo || []).find(g => g.clienteId === c);
+    const pagado = parte ? parte.pagado >= parte.parte : r.pagado >= (r.anticipo || 0);
+    const payload = { v: 1, id: r.id, t: r.tipo, s: r.suc, f: r.fecha, m: mesa ? mesa.num : null, p: mesa ? mesa.piso : null, n: r.nombre, q: r.personas, pg: pagado ? 1 : 0, c };
+    if (c && c !== r.clienteId) { const cl = db.clientes.find(x => x.id === c); if (cl) payload.h = cl.nombre; }
     const body = b64u(JSON.stringify(payload));
     return 'CC1.' + body + '.' + await firmar(body);
   }
@@ -368,20 +403,31 @@
     const confirmadas = res.filter(r => r.estado === 'confirmada').length;
     const noshow = res.filter(r => r.estado === 'noshow').length;
     const aforo = db.sucursales.filter(s => !suc || suc === 'all' || s.id === suc).reduce((a, s) => a + s.aforo, 0);
-    const costo = ped.filter(p => p.estado !== 'cancelado').reduce((a, p) => a + p.items.reduce((b, i) => { const pr = db.productos.find(x => x.id === i.prodId); return b + (pr ? pr.costo * i.cant : 0); }, 0), 0);
-    const ventaBarra = ped.filter(p => p.estado !== 'cancelado').reduce((a, p) => a + p.items.reduce((b, i) => { const pr = db.productos.find(x => x.id === i.prodId); return b + (pr && (pr.cat === 'botella' || pr.cat === 'trago' || pr.cat === 'cerveza') ? i.precio * i.cant : 0); }, 0), 0);
-    const total = ventaMesas + cover;
+    const esBebida = (pr) => pr && (pr.cat === 'botella' || pr.cat === 'trago' || pr.cat === 'cerveza');
+    const costo = ped.filter(p => p.estado !== 'cancelado').reduce((a, p) => a + p.items.reduce((b, i) => { const pr = db.productos.find(x => x.id === i.prodId); return b + (esBebida(pr) ? pr.costo * i.cant : 0); }, 0), 0);
+    const barra = db.pagos.filter(sucFilter(suc)).filter(p => p.fecha === hoy() && p.concepto === 'Consumo en barra').reduce((a, p) => a + p.monto, 0);
+    const ventaBarra = ped.filter(p => p.estado !== 'cancelado').reduce((a, p) => a + p.items.reduce((b, i) => { const pr = db.productos.find(x => x.id === i.prodId); return b + (esBebida(pr) ? i.precio * i.cant : 0); }, 0), 0);
+    const total = ventaMesas + cover + barra;
     const ticket = personas ? total / personas : 0;
     const vipAcc = acc.filter(a => a.tipo === 'clientevip' || a.tipo === 'vip').length;
-    return { ventaMesas, cover, total, personas, aforo, ocupPct: aforo ? personas / aforo * 100 : 0, mesasTot, sentadas, confirmadas, noshow, mesasPct: mesasTot ? (sentadas + confirmadas) / mesasTot * 100 : 0, ticket, costoBarraPct: ventaBarra ? costo / ventaBarra * 100 : 0, vipPct: acc.length ? vipAcc / acc.length * 100 : 0, pedidos: ped.length, pedidosAbiertos: ped.filter(p => p.estado === 'nuevo' || p.estado === 'preparando').length };
+    return { ventaMesas, cover, barra, total, personas, aforo, ocupPct: aforo ? personas / aforo * 100 : 0, mesasTot, sentadas, confirmadas, noshow, mesasPct: mesasTot ? (sentadas + confirmadas) / mesasTot * 100 : 0, ticket, costoBarraPct: ventaBarra ? costo / ventaBarra * 100 : 0, vipPct: acc.length ? vipAcc / acc.length * 100 : 0, pedidos: ped.length, pedidosAbiertos: ped.filter(p => p.estado === 'nuevo' || p.estado === 'preparando').length };
   };
   M.hist = function (suc, dias = 90) { const corte = new Date(); corte.setDate(corte.getDate() - dias); const c = fechaISO(corte); return db.ventasHist.filter(sucFilter(suc)).filter(v => v.fecha >= c); };
   M.porDiaSemana = function (suc, dias = 90) { const out = DIAS.map((d, i) => ({ dia: d, dow: i, total: 0, n: 0 })); M.hist(suc, dias).forEach(v => { out[v.dow].total += v.total; out[v.dow].n++; }); return out.map(o => ({ ...o, prom: o.n ? o.total / o.n : 0 })); };
   M.porMes = function (suc) { const out = MESES.map((m, i) => ({ mes: m, i, total: 0 })); db.ventasHist.filter(sucFilter(suc)).forEach(v => { out[v.mes].total += v.total; }); return out; };
-  M.porHora = function (suc) { const n = M.noche(suc); return db.perfilHora.map(([h, f]) => ({ hora: h, venta: Math.round(n.total * f), programado: Math.round(n.total * f * between(0.92, 1.08)) })); };
+  // hasta qué hora va la noche y qué parte de una noche normal ya pasó (perfil por hora)
+  M.transcurrido = function () { const i = db.perfilHora.findIndex(([h]) => h === HORA_DEMO); return i < 0 ? db.perfilHora.length - 1 : i; };
+  M.fraccion = function () { return db.perfilHora.slice(0, M.transcurrido() + 1).reduce((a, [, f]) => a + f, 0); };
+  const VAR_HORA = [1.07, 0.94, 1.03, 0.97, 1.04, 0.98, 1, 1, 1]; // variación ilustrativa de la noche contra el perfil
+  M.porHora = function (suc) {
+    const n = M.noche(suc); const k = M.transcurrido(); const peso = db.perfilHora.slice(0, k + 1).reduce((a, [, f], i) => a + f * VAR_HORA[i], 0);
+    const plan = db.sucursales.filter(s => !suc || suc === 'all' || s.id === suc).reduce((a, s) => a + ((M.ultimoSabado(s.id) || {}).total || 0), 0);
+    return db.perfilHora.map(([h, f], i) => ({ hora: h, venta: i <= k ? Math.round(n.total * f * VAR_HORA[i] / peso) : null, programado: Math.round(plan * f) }));
+  };
   M.topProductos = function (suc, n = 6) { const acc = {}; db.pedidos.filter(sucFilter(suc)).filter(p => p.estado !== 'cancelado').forEach(p => p.items.forEach(i => { acc[i.prodId] = acc[i.prodId] || { prodId: i.prodId, cant: 0, venta: 0 }; acc[i.prodId].cant += i.cant; acc[i.prodId].venta += i.cant * i.precio; })); return Object.values(acc).map(x => ({ ...x, nombre: (db.productos.find(p => p.id === x.prodId) || {}).nombre })).sort((a, b) => b.venta - a.venta).slice(0, n); };
   M.ultimoSabado = function (sucId) { const h = db.ventasHist.filter(v => v.suc === sucId && v.dow === 6); return h.length ? h[h.length - 1] : null; };
-  M.comparativo = function () { return db.sucursales.map(s => { const n = M.noche(s.id); const sab = M.ultimoSabado(s.id); const prev = sab ? sab.total : 0; return { suc: s, hoy: n.total, prev, delta: prev ? (n.total - prev) / prev * 100 : 0, personas: n.personas, mesasPct: n.mesasPct }; }); };
+  // contra el sábado pasado A ESTA HORA (la parte de esa noche que ya había pasado a las 23 h)
+  M.comparativo = function () { const fr = M.fraccion(); return db.sucursales.map(s => { const n = M.noche(s.id); const sab = M.ultimoSabado(s.id); const prev = sab ? Math.round(sab.total * fr) : 0; return { suc: s, hoy: n.total, prev, delta: prev ? (n.total - prev) / prev * 100 : 0, personas: n.personas, mesasPct: n.mesasPct }; }); };
   M.mejorDia = function (suc) { const d = M.porDiaSemana(suc, 90).slice().sort((a, b) => b.prom - a.prom); return d[0]; };
   M.mejorMes = function (suc) { const m = M.porMes(suc).slice().sort((a, b) => b.total - a.total); return m[0]; };
   M.mermaUltima = function (suc) { const ms = db.mermas.filter(sucFilter(suc)); if (!ms.length) return { pct: 0, items: [] }; const items = []; let teo = 0, dif = 0; ms.forEach(m => m.items.forEach(i => { teo += i.teorico; dif += (i.teorico - i.fisico); items.push({ ...i, suc: m.suc, dif: round(i.fisico - i.teorico, 1), nombre: (db.productos.find(p => p.id === i.prodId) || {}).nombre }); })); return { pct: teo ? dif / teo * 100 : 0, items: items.sort((a, b) => a.dif - b.dif) }; };
@@ -406,7 +452,7 @@
     if (/mejor d[ií]a|qu[eé] d[ií]a/.test(q)) { const d = M.mejorDia('all'); const arr = M.porDiaSemana('all', 90).slice().sort((a, b) => b.prom - a.prom); return `El mejor día es ${d.dia} con un promedio de ${fmt(d.prom)} por noche en los últimos 90 días, seguido de ${arr[1].dia} (${fmt(arr[1].prom)}). El más flojo es ${arr[arr.length - 1].dia}. Fuente: ventas por día, ambas sucursales.`; }
     if (/hora/.test(q)) { const h = M.porHora('all').slice().sort((a, b) => b.venta - a.venta)[0]; return `El pico de venta es a las ${h.hora}:00, con cerca de ${fmt(h.venta)} de la noche. El cover se concentra entre las 21:00 y las 23:00. Fuente: perfil por hora de la noche de hoy.`; }
     if (/temporada|mes/.test(q)) { const m = M.mejorMes('all'); const arr = M.porMes('all').filter(x => x.total > 0).sort((a, b) => b.total - a.total); return `La mejor temporada es ${m.mes} (${fmt(m.total)} en el periodo cargado); la más baja con datos es ${arr[arr.length - 1].mes} (${fmt(arr[arr.length - 1].total)}). Fuente: histórico de ventas por mes.`; }
-    if (/vendi[oó] m[aá]s|qu[eé] sucursal|comparativ|sucursal/.test(q)) { const c = M.comparativo(); const top = c.slice().sort((a, b) => b.hoy - a.hoy)[0]; return `Esta noche ${top.suc.nombre} lleva ${fmt(top.hoy)} (${top.delta >= 0 ? '+' : ''}${top.delta.toFixed(1)}% contra el mismo día de la semana pasada). ${c.map(x => `${x.suc.nombre}: ${fmt(x.hoy)}, ${x.personas} personas, mesas al ${x.mesasPct.toFixed(0)}%`).join('. ')}. Fuente: accesos, pagos y pedidos de hoy.`; }
+    if (/vendi[oó] m[aá]s|qu[eé] sucursal|comparativ|sucursal/.test(q)) { const c = M.comparativo(); const top = c.slice().sort((a, b) => b.hoy - a.hoy)[0]; return `Esta noche ${top.suc.nombre} lleva ${fmt(top.hoy)} (${top.delta >= 0 ? '+' : ''}${top.delta.toFixed(1)}% contra el sábado pasado a esta hora). ${c.map(x => `${x.suc.nombre}: ${fmt(x.hoy)}, ${x.personas} personas, mesas al ${x.mesasPct.toFixed(0)}%`).join('. ')}. Fuente: accesos, pagos y pedidos de hoy.`; }
     if (/vip/.test(q)) { const vips = db.clientes.filter(c => c.nivel === 'vip'); const ausentes = vips.filter(c => !db.accesos.some(a => a.fecha === hoy() && a.nombre === c.nombre) && !db.reservas.some(r => r.fecha === hoy() && r.clienteId === c.id)); return `Tienes ${vips.length} clientes VIP. ${all.vipPct.toFixed(0)}% de los accesos de hoy son VIP. ${ausentes.length} VIP no tienen reserva ni acceso esta noche${ausentes.length ? ': ' + ausentes.slice(0, 4).map(c => c.nombre.split(' ')[0]).join(', ') : ''}. ¿Quieres que prepare una promoción para ellos?`; }
     if (/producto|top|m[aá]s se vende|botella/.test(q)) { const t = M.topProductos('all', 3); return `Lo más vendido esta noche: ${t.map(x => `${x.nombre} (${x.cant}, ${fmt(x.venta)})`).join('; ')}. Fuente: pedidos de hoy.`; }
     if (/cover|aforo|cu[aá]nta gente|personas/.test(q)) { return `Han entrado ${all.personas} personas (${n1}: ${s1.personas}, ${n2}: ${s2.personas}). Cover cobrado: ${fmt(all.cover)}. Ocupación de aforo: ${pct(all.ocupPct, 0)}. Mesas: ${all.sentadas} sentadas, ${all.confirmadas} por llegar, ${all.noshow} no llegaron.`; }
@@ -420,7 +466,7 @@
   window.CC = {
     get db() { return db; }, save: persist, reset, reload, log,
     on(fn) { subs.add(fn); return () => subs.delete(fn); },
-    uid, money, pct, hoy, ahoraHM, fechaISO, fechaLarga, iniciales, DIAS, MESES, MESES_L, round,
+    uid, money, pct, hoy, ahoraHM, HORA_DEMO, fechaISO, fechaLarga, iniciales, DIAS, MESES, MESES_L, round,
     SUCURSALES: () => db.sucursales, TIPOS_QR, ROLES, PRECIOS: () => db.config.precios, BASES,
     tokenQR, verificarQR, M, asistente, estadoMesa, planoSVG, PLANO_COLORES, PLANO_LEYENDA,
     suc: (id) => db.sucursales.find(s => s.id === id), mesa: (id) => db.mesas.find(m => m.id === id), prod: (id) => db.productos.find(p => p.id === id), cliente: (id) => db.clientes.find(c => c.id === id), emp: (id) => db.personal.find(e => e.id === id), prov: (id) => db.proveedores.find(p => p.id === id),
@@ -428,6 +474,16 @@
     crearReserva(datos) { const r = Object.assign({ id: uid('r'), fecha: hoy(), estado: 'confirmada', creado: new Date().toISOString(), grupo: [], preorden: [], pagado: 0 }, datos); db.reservas.push(r); log(datos.origen || 'app', 'Reserva ' + r.tipo + ' ' + r.nombre); persist(); return r; },
     registrarPago(datos) { const p = Object.assign({ id: uid('pg'), fecha: hoy(), hora: ahoraHM(), estado: 'aprobado', propina: 0 }, datos); db.pagos.push(p); persist(); return p; },
     crearPedido(datos) { const o = Object.assign({ id: uid('o'), estado: 'nuevo', hora: ahoraHM(), creado: Date.now(), origen: 'app' }, datos); db.pedidos.push(o); log(o.origen, 'Pedido en mesa ' + (CC.mesa(o.mesaId) || {}).num); persist(); return o; },
-    registrarAcceso(datos) { const a = Object.assign({ id: uid('a'), fecha: hoy(), hora: ahoraHM(), resultado: 'ok', puerta: 'Escáner 1' }, datos); db.accesos.push(a); persist(); return a; }
+    registrarAcceso(datos) { const a = Object.assign({ id: uid('a'), fecha: hoy(), hora: ahoraHM(), resultado: 'ok', puerta: 'Escáner 1' }, datos); db.accesos.push(a); persist(); return a; },
+    // promociones: la casa publica; los clientes dan me gusta, comentan y se las mandan entre ellos
+    promo: (id) => db.promos.find(p => p.id === id),
+    publicarPromo(datos) { const p = Object.assign({ id: uid('pr'), min: 0, creado: Date.now(), likesBase: 0, likes: [], guardados: [], coment: [], envios: 0, canjes: 0, suc: 'all' }, datos); db.promos.unshift(p); log('promos', 'Publicó «' + (p.grande ? p.grande + ' ' : '') + p.titulo + '»'); persist(); return p; },
+    likePromo(id, clienteId) { const p = CC.promo(id); if (!p) return false; const i = p.likes.indexOf(clienteId); if (i >= 0) p.likes.splice(i, 1); else p.likes.push(clienteId); persist(); return i < 0; },
+    guardarPromo(id, clienteId) { const p = CC.promo(id); if (!p) return false; const i = p.guardados.indexOf(clienteId); if (i >= 0) p.guardados.splice(i, 1); else p.guardados.push(clienteId); persist(); return i < 0; },
+    comentar(id, clienteId, texto) { const p = CC.promo(id); if (!p || !texto) return; p.coment.push({ id: uid('cm'), clienteId, texto, min: 0, creado: Date.now() }); log('app', 'Comentario en «' + p.titulo + '»'); persist(); },
+    enviarPromo(id, de, paras, nota) { const p = CC.promo(id); if (!p) return; paras.forEach(para => db.buzon.push({ id: uid('bz'), promoId: id, de, para, nota: nota || '', min: 0, creado: Date.now(), visto: false })); p.envios += paras.length; log('app', 'Promo enviada a ' + paras.length + (paras.length === 1 ? ' amigo' : ' amigos')); persist(); },
+    // minutos desde que se publicó (las de la semilla traen «min»; las nuevas, la hora de creación)
+    minutos: (x) => (x.min || 0) + (x.creado ? Math.floor((Date.now() - x.creado) / 60000) : 0),
+    hace(x) { const m = CC.minutos(x); if (m < 1) return 'ahora'; if (m < 60) return 'hace ' + m + ' min'; if (m < 1440) return 'hace ' + Math.floor(m / 60) + ' h'; if (m < 2880) return 'ayer'; return 'hace ' + Math.floor(m / 1440) + ' d'; }
   };
 })();

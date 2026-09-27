@@ -9,8 +9,8 @@
 <meta property="og:site_name" content="T.T AI Firm">
 <meta property="og:title" content="Canta Corazón · Propuesta de sistema integral">
 <meta property="og:description" content="Un sistema propio para Canta Corazón: el cliente reserva y paga solo, entra con su QR, la puerta y las mesas se ven en vivo y los socios tienen sus números y un asistente de IA. Demo funcional, listo para probarse en el teléfono.">
-<meta property="og:url" content="https://tt-ai-firm.github.io/canta-corazon-demo/">
-<meta property="og:image" content="https://tt-ai-firm.github.io/canta-corazon-demo/shared/img/og.jpg">
+<meta property="og:url" content="https://ttfirm.ai/canta-corazon-demo/">
+<meta property="og:image" content="https://ttfirm.ai/canta-corazon-demo/shared/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="es_MX">
@@ -18,8 +18,8 @@
 <link rel="icon" href="shared/img/fav.svg">
 <script type="importmap">{ "imports": { "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.18/+esm" } }</script>
 <style>
-  @font-face { font-family: "Montserrat"; src: url("shared/fonts/Montserrat.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
-  @font-face { font-family: "Inter Tight"; src: url("shared/fonts/InterTight.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Montserrat"; src: url("shared/fonts/Montserrat.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Inter Tight"; src: url("shared/fonts/InterTight.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
   :root {
     --page: #130708; --deep: #130708; --deep2: #1C0D0F; --terra: #C25B32; --terra-light: #F3C8B4; --terra-ink: #F6EFE4; --gold: #C99A2E;
     --surface: #F6EFE4; --surface2: #EFE2D8; --card: #FFFDF9;
@@ -149,9 +149,13 @@
   .cols { display: grid; gap: 2.5rem; padding: 3.5rem 0; grid-template-columns: 1fr; } @media (min-width: 768px) { .cols { grid-template-columns: 1.4fr 1fr 1fr; } } @media (min-width: 1024px) { .cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
   .cols .brandcol { max-width: 22rem; } .cols .brandcol img { height: 1.8rem; } .cols .brandcol p { font-size: .875rem; color: rgba(246,239,228,.65); margin-top: 1rem; line-height: 1.6; }
   .cols address { font-style: normal; margin-top: 1.5rem; font-size: .875rem; color: rgba(246,239,228,.8); line-height: 1.8; } .cols address .mut { color: rgba(246,239,228,.55); }
-  .cols h4 { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; color: rgba(246,239,228,.5); } .cols ul, .cols ol { padding: 0; margin-top: 1rem; font-size: .875rem; color: rgba(246,239,228,.8); list-style: none; } .cols li + li { margin-top: .75rem; } .cols li a:hover { color: var(--terra-light); }
+  .cols h4 { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .2em; color: rgba(246,239,228,.5); } .cols ul, .cols ol { padding: 0; margin-top: 1rem; font-size: .875rem; color: rgba(246,239,228,.8); list-style: none; } .cols li + li { margin-top: .25rem; } .cols li a { display: inline-block; padding: .5rem 0; } .cols li a:hover { color: var(--terra-light); }
   .cols ol { counter-reset: paso; } .cols ol li { display: flex; gap: .6rem; } .cols ol li::before { counter-increment: paso; content: counter(paso, decimal-leading-zero); font-family: "Inter Tight", sans-serif; color: var(--terra-light); flex: 0 0 1.6rem; }
-  .bottombar { border-top: 1px solid rgba(246,239,228,.15); padding-top: 2rem; font-size: .875rem; color: rgba(246,239,228,.6); display: flex; flex-direction: column; gap: 1.25rem; } @media (min-width: 640px) { .bottombar { flex-direction: row; justify-content: space-between; align-items: center; } } .bottombar nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .bottombar { border-top: 1px solid rgba(246,239,228,.15); padding-top: 2rem; font-size: .875rem; color: rgba(246,239,228,.6); display: flex; flex-direction: column; gap: 1.25rem; } @media (min-width: 640px) { .bottombar { flex-direction: row; justify-content: space-between; align-items: center; } } .bottombar nav { display: flex; gap: 1.25rem; flex-wrap: wrap; } .bottombar nav a { display: inline-block; padding: .5rem 0; }
+  /* áreas de toque cómodas en pantallas táctiles */
+  #menu .bottomrow nav a { display: inline-block; padding: .6rem 0; }
+  .dots button { position: relative; } .dots button::after { content: ""; position: absolute; inset: -.6rem -.35rem; }
+  .sc a { padding: .5rem 0; margin-top: 0; }
   /* menú */
   #menu { position: fixed; inset: 0; z-index: 70; display: flex; flex-direction: column; pointer-events: none; } #menu.open { pointer-events: auto; }
   #menu .bg { position: absolute; inset: 0; background: var(--deep); opacity: 0; transition: opacity 320ms ease; } #menu.open .bg { opacity: 1; }
@@ -199,7 +203,7 @@
         <div class="slider iv" data-dl="650"><div class="glass"><div class="sc" id="sc"></div></div><div class="dots" id="scDots" role="tablist"></div></div>
         <article class="member glass iv" data-dl="780">
           <div class="col"><div><div class="big">2 apps</div><div class="avs"><i style="background:#C25B32"></i><i style="background:#F6EFE4"></i><i style="background:#C99A2E"></i></div></div><div class="cap">Una app interna para el equipo y una app para el cliente, sobre la misma base de datos</div></div>
-          <img src="shared/img/carr1.jpg" alt="Interior de Canta Corazón" loading="lazy">
+          <img src="shared/img/carr1.webp" alt="Interior de Canta Corazón" loading="lazy">
         </article>
       </div>
     </div>
@@ -225,17 +229,17 @@
   <section class="facil" id="pantallas">
     <div class="grid">
       <div class="intro">
-        <img class="icon iv" data-s=".85" data-y="0" src="shared/img/ccww.jpg" alt="Canta Corazón" loading="lazy">
+        <img class="icon iv" data-s=".85" data-y="0" src="shared/img/ccww.webp" alt="Canta Corazón" loading="lazy">
         <h2 class="big lines" data-lines="Así se ve|en el teléfono|del cliente" data-stagger="120" style="margin-top:1.5rem;"></h2>
         <p class="body rv fade" data-words="El cliente escoge su mesa en el plano, aparta botellas en preventa, divide el anticipo con sus amigos y paga desde el teléfono. Recibe su QR, la puerta lo escanea y entra. Ya adentro, pide a la barra desde la mesa, pide su canción al mariachi y acumula recompensas en su noche." data-stagger="24" data-d="700" data-base="250"></p>
       </div>
       <div class="courts">
-        <figure class="terra iv" data-y="48" data-hover-scale="1.03"><img src="shared/img/shots/shot_cl_reservar.jpg" alt="App del cliente: reservar una mesa en el plano" loading="lazy"><figcaption><b>App del cliente · Reservar</b><span>Escoge la mesa en el plano de la sucursal y paga el anticipo desde el teléfono.</span></figcaption></figure>
-        <figure class="dark up iv" data-y="48" data-dl="140" data-hover-scale="1.03"><img src="shared/img/shots/shot_cl_noche.jpg" alt="App del cliente: la noche con su QR, sus pedidos y sus puntos" loading="lazy"><figcaption><b>App del cliente · Mi noche</b><span>Su QR para entrar, lo que ha pedido y sus recompensas, en una sola pantalla.</span></figcaption></figure>
+        <figure class="terra iv" data-y="48" data-hover-scale="1.03"><img src="shared/img/shots/shot_cl_reservar.webp" alt="App del cliente: reservar una mesa en el plano" loading="lazy"><figcaption><b>App del cliente · Reservar</b><span>Escoge la mesa en el plano de la sucursal y paga el anticipo desde el teléfono.</span></figcaption></figure>
+        <figure class="dark up iv" data-y="48" data-dl="140" data-hover-scale="1.03"><img src="shared/img/shots/shot_cl_noche.webp" alt="App del cliente: la noche con su QR, sus pedidos y sus puntos" loading="lazy"><figcaption><b>App del cliente · Mi noche</b><span>Su QR para entrar, lo que ha pedido y sus recompensas, en una sola pantalla.</span></figcaption></figure>
       </div>
     </div>
     <div class="wide iv" data-y="40">
-      <figure data-hover-scale="1.02"><img src="shared/img/shots/shot_mesas.jpg" alt="App interna: el plano de mesas en vivo" loading="lazy"><figcaption><b>App interna · Mesas y reservas</b><span>El plano de la sucursal en vivo: libre, reservada, con anticipo u ocupada. La reserva del cliente aparece sola.</span></figcaption></figure>
+      <figure data-hover-scale="1.02"><img src="shared/img/shots/shot_mesas.webp" alt="App interna: el plano de mesas en vivo" loading="lazy"><figcaption><b>App interna · Mesas y reservas</b><span>El plano de la sucursal en vivo: libre, reservada, con anticipo u ocupada. La reserva del cliente aparece sola.</span></figcaption></figure>
     </div>
   </section>
 
@@ -278,14 +282,14 @@
     <div class="cta">
       <div><span class="eyebrow light">Prueben el demo</span><p class="h lines" data-lines="Ábranlo en|su teléfono." data-stagger="120"></p></div>
       <div class="apps">
-        <a class="applink iv" data-y="20" href="cliente/?user=c1#noche"><img src="shared/img/shots/shot_cl_noche.jpg" alt=""><div><b>App del cliente</b><span>Reservar, pagar, entrar con QR y pedir</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <a class="applink iv" data-y="20" data-dl="90" href="interno/?rol=hostess#mesas"><img src="shared/img/shots/shot_mesas.jpg" alt=""><div><b>App interna · Hostess</b><span>Plano de mesas, reservas, clientes y puerta</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <a class="applink iv" data-y="20" data-dl="180" href="interno/?rol=socio#tablero"><img src="shared/img/shots/shot_tablero.jpg" alt=""><div><b>App interna · Socio</b><span>Tablero, todos los módulos y asistente de IA</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="applink iv" data-y="20" href="cliente/?user=c1#noche"><img src="shared/img/shots/shot_cl_noche.webp" alt=""><div><b>App del cliente</b><span>Reservar, pagar, entrar con QR y pedir</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="applink iv" data-y="20" data-dl="90" href="interno/?rol=hostess#mesas"><img src="shared/img/shots/shot_mesas.webp" alt=""><div><b>App interna · Hostess</b><span>Plano de mesas, reservas, clientes y puerta</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="applink iv" data-y="20" data-dl="180" href="interno/?rol=socio#tablero"><img src="shared/img/shots/shot_tablero.webp" alt=""><div><b>App interna · Socio</b><span>Tablero, todos los módulos y asistente de IA</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
     </div>
     <div class="cols">
-      <div class="brandcol"><img src="shared/img/logo.png" alt="Canta Corazón"><p>Propuesta de sistema integral para Canta Corazón. Presentan Carlos Martínez y Michel Tron, con T.T AI Firm. El demo usa datos ilustrativos; los pagos, las facturas y los QR están simulados. En la versión real todo corre en la nube y se sincroniza entre teléfonos y sucursales.</p><address><span class="mut">Polanco · Pedregal</span><br><span class="mut">Ciudad de México · Septiembre 2026</span></address></div>
-      <nav aria-label="Demos"><h4>Demos</h4><ul><li><a href="cliente/?user=c1#noche">App del cliente</a></li><li><a href="interno/?rol=puerta#puerta">Puerta · escáner QR</a></li><li><a href="interno/?rol=hostess#mesas">Hostess · mesas</a></li><li><a href="interno/?rol=barra#pedidos">Barra · pedidos</a></li><li><a href="interno/?rol=caja#caja">Caja y cortes</a></li><li><a href="interno/?rol=compras#compras">Compras · XML</a></li><li><a href="interno/?rol=socio#tablero">Socio · tablero e IA</a></li></ul></nav>
+      <div class="brandcol"><img src="shared/img/logo.png" alt="Canta Corazón"><p>Propuesta de sistema integral para Canta Corazón. Presentan Carlos Martínez y Michel Tron, con T.T AI Firm. El demo usa datos ilustrativos; los pagos y las facturas están simulados. Funciona sin internet: al abrirlo una vez queda guardado en el teléfono. En la versión real todo corre en la nube y se sincroniza entre teléfonos, tabletas y sucursales.</p><address><span class="mut">Polanco · Pedregal</span><br><span class="mut">Ciudad de México · Septiembre 2026</span></address></div>
+      <nav aria-label="Demos"><h4>Demos</h4><ul><li><a href="cliente/?user=c1#noche">App del cliente</a></li><li><a href="interno/?rol=puerta#puerta">Puerta · escáner QR</a></li><li><a href="interno/?rol=hostess#mesas">Hostess · mesas</a></li><li><a href="interno/?rol=barra#pedidos">Barra · pedidos</a></li><li><a href="interno/?rol=caja#caja">Caja y cortes</a></li><li><a href="interno/?rol=compras#compras">Compras · XML</a></li><li><a href="interno/?rol=socio#promos">Promociones</a></li><li><a href="interno/?rol=socio#tablero">Socio · tablero e IA</a></li></ul></nav>
       <nav aria-label="Recorrido sugerido"><h4>Recorrido sugerido</h4><ol><li><a href="cliente/?user=c1#noche">Reserven una mesa desde la app del cliente y paguen el anticipo.</a></li><li><a href="interno/?rol=hostess#mesas">Vean la reserva aparecer en el plano de la hostess.</a></li><li><a href="interno/?rol=puerta#puerta">Escaneen el QR del cliente en la puerta.</a></li><li><a href="interno/?rol=barra#pedidos">Pidan desde la mesa y véanlo llegar a la barra.</a></li><li><a href="interno/?rol=socio#asistente">Pregúntenle al asistente de IA por la noche.</a></li></ol></nav>
       <nav aria-label="Secciones"><h4>Secciones</h4><ul><li><a href="#propuesta" data-scroll>La propuesta</a></li><li><a href="#sistema" data-scroll>El sistema</a></li><li><a href="#pantallas" data-scroll>Pantallas</a></li><li><a href="#conectado" data-scroll>Todo conectado</a></li><li><a href="#beneficios" data-scroll>Lo que cambia</a></li><li><a href="#experiencia" data-scroll>Con quiénes hemos trabajado</a></li></ul></nav>
     </div>
@@ -299,12 +303,13 @@
 
 <div id="modal" aria-hidden="true"><div class="bg" data-close-modal></div><div class="panel" role="dialog" aria-modal="true" aria-labelledby="mTitle"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;"><div><span class="eyebrow">Probar el demo</span><h2 id="mTitle" class="lines" data-lines="Elijan|una app" data-stagger="90"></h2></div><button class="xbtn" data-close-modal aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="opts">
-    <a class="applink" href="cliente/?user=c1#noche"><img src="shared/img/shots/shot_cl_noche.jpg" alt=""><div><b>App del cliente</b><span>Reservar, pagar, entrar con QR y pedir</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="applink" href="interno/?rol=hostess#mesas"><img src="shared/img/shots/shot_mesas.jpg" alt=""><div><b>App interna · Hostess</b><span>Plano de mesas, reservas, clientes y puerta</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="applink" href="interno/?rol=socio#tablero"><img src="shared/img/shots/shot_tablero.jpg" alt=""><div><b>App interna · Socio</b><span>Tablero, todos los módulos y asistente de IA</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="applink" href="cliente/?user=c1#noche"><img src="shared/img/shots/shot_cl_noche.webp" alt=""><div><b>App del cliente</b><span>Reservar, pagar, entrar con QR y pedir</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="applink" href="interno/?rol=hostess#mesas"><img src="shared/img/shots/shot_mesas.webp" alt=""><div><b>App interna · Hostess</b><span>Plano de mesas, reservas, clientes y puerta</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="applink" href="interno/?rol=socio#tablero"><img src="shared/img/shots/shot_tablero.webp" alt=""><div><b>App interna · Socio</b><span>Tablero, todos los módulos y asistente de IA</span></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div></div></div>
 
 <script src="shared/vendor/qrcode.min.js"></script>
+<script src="shared/sync.js?v=11"></script>
 <script>(function(){ var el=document.getElementById('qrCliente'); if(!el||!window.QRCode) return; var base=location.origin+location.pathname.replace(/[^\/]*$/,''); new QRCode(el,{text: base+'cliente/?user=c1#noche', width: 176, height: 176, colorDark: '#130708', colorLight: '#F6EFE4', correctLevel: QRCode.CorrectLevel.M}); })();</script>
 <script type="module">
   const FONT_BASE = 16, BASE_W = 1920, COEF = 0.6666; const html = document.documentElement;
@@ -335,9 +340,9 @@
   if (lenis) lenis.on('scroll', onScroll); addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll);
   const plate = document.getElementById('plate'); reg(document.querySelector('.hero'), (p) => { plate.style.transform = `translateY(${(p * 10).toFixed(2)}%) scale(${(1 - p * 0.06).toFixed(3)})`; });
   const SLIDES = [
-    { img: 'shared/img/shots/shot_cl_noche.jpg', brand: 'Demo · app del cliente', title: 'Reservar, entrar con QR y pedir', href: 'cliente/?user=c1#noche', alt: 'Pantalla de la app del cliente' },
-    { img: 'shared/img/shots/shot_mesas.jpg', brand: 'Demo · app interna', title: 'El plano de mesas en vivo', href: 'interno/?rol=hostess#mesas', alt: 'Plano de mesas de la app interna' },
-    { img: 'shared/img/shots/shot_tablero.jpg', brand: 'Demo · tablero de socios', title: 'Los números y el asistente de IA', href: 'interno/?rol=socio#tablero', alt: 'Tablero de socios de la app interna' },
+    { img: 'shared/img/shots/shot_cl_noche.webp', brand: 'Demo · app del cliente', title: 'Reservar, entrar con QR y pedir', href: 'cliente/?user=c1#noche', alt: 'Pantalla de la app del cliente' },
+    { img: 'shared/img/shots/shot_mesas.webp', brand: 'Demo · app interna', title: 'El plano de mesas en vivo', href: 'interno/?rol=hostess#mesas', alt: 'Plano de mesas de la app interna' },
+    { img: 'shared/img/shots/shot_tablero.webp', brand: 'Demo · tablero de socios', title: 'Los números y el asistente de IA', href: 'interno/?rol=socio#tablero', alt: 'Tablero de socios de la app interna' },
   ];
   const sc = document.getElementById('sc'), scDots = document.getElementById('scDots'); let si = 0, sTimer = null;
   function drawSlide(i, first) { const s = SLIDES[i]; const paint = () => { sc.innerHTML = `<img src="${s.img}" alt="${s.alt}" loading="lazy"><div><b>${s.brand}</b><span>${s.title}</span><a href="${s.href}">Abrir →</a></div>`; sc.classList.remove('swap'); }; if (first) paint(); else { sc.classList.add('swap'); setTimeout(paint, 240); } scDots.innerHTML = SLIDES.map((_, k) => `<button role="tab" aria-label="Demo ${k + 1}" aria-current="${k === i}"><i></i></button>`).join(''); scDots.querySelectorAll('button').forEach((b, k) => b.onclick = () => { si = k; drawSlide(si); restartSlider(); }); }
@@ -345,13 +350,14 @@
   function startSlider() { drawSlide(si, true); restartSlider(); }
   const PROGS = [
     ['01', 'App del cliente', 'Entra con un enlace o un código QR, sin instalar nada. Reserva su mesa en el plano de la sucursal, aparta botellas en preventa, divide el anticipo con sus amigos y paga desde el teléfono. Su QR lo mete a la puerta; desde la mesa pide a la barra, pide su canción al mariachi y acumula recompensas noche tras noche.', 'cliente/?user=c1#noche', 'Demo · cliente'],
-    ['02', 'Puerta y QR por tipo', 'Cada entrada tiene su propio QR: barra, cover, mesa, mesa VIP o cliente VIP. La puerta escanea con el teléfono, el sistema dice qué es, de quién es y si ya está pagado, y el acceso queda registrado al segundo. El QR va firmado: vale aunque venga de otro dispositivo.', 'interno/?rol=puerta#puerta', 'Demo · rol puerta'],
+    ['02', 'Puerta y QR por tipo', 'Cada entrada tiene su propio QR: barra, cover, mesa, mesa VIP o cliente VIP, y cada persona del grupo trae el suyo. La puerta escanea con el teléfono o la tableta y en pantalla completa dice quién es, a qué mesa va, si ya pagó su parte y si trae preorden. El QR va firmado: si alguien lo altera o lo usa dos veces, no pasa.', 'interno/?rol=puerta#puerta', 'Demo · rol puerta'],
     ['03', 'Mesas y reservas', 'El plano de cada sucursal en vivo: libre, reservada, con anticipo pagado u ocupada. La hostess asigna, mueve y libera desde el teléfono, y la reserva que el cliente hizo en su app aparece sola en el plano. Se acaba el Google Form.', 'interno/?rol=hostess#mesas', 'Demo · rol hostess'],
     ['04', 'Pedidos y barra', 'La barra en vivo: lo que piden los meseros, lo que llega de la mesa y lo que el cliente pide desde su app, en una sola cola con nuevos, en preparación y entregados. Cada pedido se suma a la cuenta de la mesa y descuenta su botella.', 'interno/?rol=barra#pedidos', 'Demo · rol barra'],
     ['05', 'Inventario, merma y compras', 'Botellas en existencia, abiertas en barra, valor del inventario y merma del último cierre, por sucursal. Las compras entran cargando el XML de la factura, con proveedores, precio histórico y lo que falta por pagar.', 'interno/?rol=compras#compras', 'Demo · rol compras'],
     ['06', 'Caja y cortes', 'Cada peso con su comprobante y su renglón: efectivo, tarjeta, transferencia y Apple Pay. Conciliación con la terminal y corte de turno por sucursal. Al confirmar el cobro, el QR del cliente queda activo.', 'interno/?rol=caja#caja', 'Demo · rol caja'],
     ['07', 'Clientes', 'Quién viene, cuántas veces, cuánto gasta, sus puntos y cuándo cumple años. Frecuentes y VIP identificados desde la puerta, y campañas para los que cumplen este mes.', 'interno/?rol=hostess#clientes', 'Demo · rol hostess'],
-    ['08', 'Tablero de socios y asistente de IA', 'Venta de la noche, personas y ocupación de mesas, por sucursal, con alertas de cortesías. Y un asistente de inteligencia artificial al que los socios le preguntan en lenguaje normal y contesta con los datos del sistema: cualquier número, al momento.', 'interno/?rol=socio#tablero', 'Demo · rol socio'],
+    ['08', 'Promociones en la app', 'Como un Instagram propio donde solo publica Canta Corazón: los clientes ven las promociones, dan me gusta, comentan y se las mandan entre amigos dentro de la app. Cada envío y cada canje queda medido, para saber qué promoción sí trae gente.', 'interno/?rol=socio#promos', 'Demo · promociones'],
+    ['09', 'Tablero de socios y asistente de IA', 'Venta de la noche, personas y ocupación de mesas, por sucursal, con alertas de cortesías. Y un asistente de inteligencia artificial al que los socios le preguntan en lenguaje normal y contesta con los datos del sistema: cualquier número, al momento.', 'interno/?rol=socio#tablero', 'Demo · rol socio'],
   ];
   document.getElementById('plist').innerHTML = PROGS.map(([n, t, d, h, tag], i) => `<li><a href="${h}"><div class="row iv" data-y="26" data-dl="${i * 90}"><span class="n num">${n}</span><span class="tx"><b>${t}</b><span>${d}</span><small>${tag} →</small></span><span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></a></li>`).join('');
   document.querySelectorAll('#plist .row').forEach(r => { io.observe(r); hover(r.closest('a'), r.querySelector('.ar'), { x: 0, opacity: .55 }, { x: 8, opacity: 1 }, 300, 20); });
